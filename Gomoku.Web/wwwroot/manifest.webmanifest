@@ -1,0 +1,11 @@
+{
+  "name": "오목 한판",
+  "short_name": "오목",
+  "description": "오프라인에서도 즐기는 15×15 오목",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#160f0a",
+  "theme_color": "#20140d",
+  "lang": "ko",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

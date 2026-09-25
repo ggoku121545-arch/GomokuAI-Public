@@ -1,0 +1,70 @@
+name: GitHub Pages 배포
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: .NET SDK 설정
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: 종속성 복원
+        run: dotnet restore GomokuAI.sln
+
+      - name: 솔루션 빌드
+        run: dotnet build GomokuAI.sln --no-restore
+
+      - name: 테스트 실행
+        run: dotnet test GomokuAI.sln --no-build
+
+      - name: GitHub Pages 기본 경로 설정
+        shell: bash
+        run: |
+          repository_name="${GITHUB_REPOSITORY#*/}"
+          sed -i "s|<base href=\"/\" />|<base href=\"/${repository_name}/\" />|" Gomoku.Web/wwwroot/index.html
+
+      - name: 웹 앱 게시
+        run: dotnet publish Gomoku.Web/Gomoku.Web.csproj --configuration Release --no-restore --output publish
+
+      - name: GitHub Pages 파일 준비
+        run: |
+          cp publish/wwwroot/index.html publish/wwwroot/404.html
+          touch publish/wwwroot/.nojekyll
+
+      - name: GitHub Pages 설정
+        uses: actions/configure-pages@v5
+
+      - name: GitHub Pages 아티팩트 업로드
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: publish/wwwroot
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: GitHub Pages 배포
+        id: deployment
+        uses: actions/deploy-pages@v4
