@@ -1,0 +1,12 @@
+/* 줄공책: 푸른 격자와 공책의 붉은 여백선 */
+.board-wrap[data-board-theme="lined-paper"] {
+    --board-bg: #fcfbf4;
+    --board-line: #4e7fa7;
+    --board-star: #315f84;
+    --board-frame: linear-gradient(145deg, #faf8ef, #ded7c7);
+    --board-inset-shadow: inset 0 0 18px #746b5b24;
+    --board-overlay: linear-gradient(90deg, transparent 0 8%, #d45d6250 8.2% 8.6%, transparent 8.8%), repeating-linear-gradient(0deg, transparent 0 20px, #5e9bc018 20px 21px);
+}
+
+.theme-option[data-theme="lined-paper"] { --preview-frame: #e7dfcf; --preview-board: #fcfbf4; --preview-line: #4e7fa7; }
+.theme-option[data-theme="lined-paper"] .theme-preview { box-shadow: inset 4px 0 #d45d6270, 0 2px 5px #0005; }
