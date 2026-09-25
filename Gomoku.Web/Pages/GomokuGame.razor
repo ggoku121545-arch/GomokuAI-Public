@@ -1,0 +1,87 @@
+@page "/game/gomoku"
+<PageTitle>오목 한판</PageTitle>
+<main class="game-shell">
+    <header>
+        <div><span class="eyebrow">15 × 15 오목</span><h1>오목 한판</h1></div>
+        <div class="turn-badge" aria-live="polite"><span class="mini-stone @TurnStoneClass"></span>@Status</div>
+    </header>
+
+    <section class="theme-picker" aria-labelledby="theme-picker-title">
+        <div class="theme-picker__heading">
+            <h2 id="theme-picker-title">오목판 테마</h2>
+            <span aria-live="polite">@selectedTheme.Name</span>
+        </div>
+        <div class="theme-options" role="radiogroup" aria-label="오목판 테마 선택">
+            @foreach (var theme in BoardThemes.All)
+            {
+                <button @key="theme.Id"
+                        type="button"
+                        class="theme-option @(selectedTheme.Id == theme.Id ? "is-selected" : null)"
+                        data-theme="@theme.Id"
+                        role="radio"
+                        aria-checked="@(selectedTheme.Id == theme.Id ? "true" : "false")"
+                        title="@theme.Description"
+                        @onclick="() => SelectTheme(theme)">
+                    <span class="theme-preview" aria-hidden="true"></span>
+                    <span class="theme-option__name">@theme.Name</span>
+                </button>
+            }
+        </div>
+    </section>
+
+    <section class="board-wrap" data-board-theme="@selectedTheme.Id" aria-label="@($"{selectedTheme.Name} 오목판")">
+        <div class="board" role="grid" aria-disabled="@(game.Result != GameResult.Playing || thinking)">
+            @for (var row = 0; row < Game.BoardSize; row++)
+            {
+                @for (var column = 0; column < Game.BoardSize; column++)
+                {
+                    var r = row; var c = column; var position = new Position(r, c); var stone = game[r, c];
+                    <button class="intersection @StoneClass(stone) @(game.LastMove == position ? "last" : "") @(game.WinningLine.Contains(position) ? "winner" : "")"
+                            role="gridcell" aria-label="@(r + 1)행 @(c + 1)열 @StoneLabel(stone)" disabled="@(stone != Stone.Empty || game.Result != GameResult.Playing || thinking)"
+                            @onclick="() => HumanMove(position)"><span class="stone"></span></button>
+                }
+            }
+        </div>
+    </section>
+
+    <footer>
+        <button class="action primary" @onclick="NewGame">새 게임</button>
+        <button class="action" @onclick="Undo" disabled="@(game.Moves.Count == 0 || thinking)">무르기</button>
+    </footer>
+    <p class="hint">흑돌을 놓아 다섯 개를 먼저 이어 보세요.</p>
+</main>
+
+@code {
+    private readonly Game game = new();
+    private readonly GomokuAi ai = new();
+    private BoardTheme selectedTheme = BoardThemes.Default;
+    private bool thinking;
+
+    private string Status => game.Result switch
+    {
+        GameResult.BlackWins => "흑 승리!",
+        GameResult.WhiteWins => "백 승리",
+        GameResult.Draw => "무승부",
+        _ when thinking => "컴퓨터가 생각 중…",
+        _ when game.CurrentTurn == Stone.Black => "내 차례 · 흑",
+        _ => "컴퓨터 차례 · 백"
+    };
+    private string TurnStoneClass => game.Result == GameResult.Draw ? "empty" : game.Result == GameResult.WhiteWins || game.CurrentTurn == Stone.White ? "white" : "black";
+    private static string StoneClass(Stone stone) => stone == Stone.Black ? "black" : stone == Stone.White ? "white" : "empty";
+    private static string StoneLabel(Stone stone) => stone == Stone.Black ? "흑돌" : stone == Stone.White ? "백돌" : "빈 자리";
+
+    private async Task HumanMove(Position position)
+    {
+        if (thinking || game.CurrentTurn != Stone.Black || !game.TryPlay(position) || game.Result != GameResult.Playing) return;
+        thinking = true;
+        StateHasChanged();
+        await Task.Delay(180);
+        var move = ai.ChooseMove(game);
+        if (move is not null) game.TryPlay(move.Value);
+        thinking = false;
+    }
+
+    private void SelectTheme(BoardTheme theme) => selectedTheme = theme;
+    private void NewGame() { game.Reset(); thinking = false; }
+    private void Undo() { if (!thinking) game.UndoRound(); }
+}
