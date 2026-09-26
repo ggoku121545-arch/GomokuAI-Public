@@ -3,8 +3,14 @@
 body { margin: 0; min-height: 100dvh; background: radial-gradient(circle at 50% 0, #49301d 0, #20140d 45%, #100b08 100%); }
 button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .game-shell { width: min(100%, 620px); min-height: 100dvh; margin: auto; padding: max(18px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; justify-content: center; }
-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 3px 12px; }
-h1 { font-size: clamp(1.7rem, 7vw, 2.45rem); letter-spacing: -.07em; margin: 1px 0 0; line-height: 1; }
+.game-header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; margin: 0 3px 12px; }
+.game-header h1 { font-size: clamp(1.55rem, 6.5vw, 2.45rem); letter-spacing: -.07em; margin: 1px 0 0; line-height: 1; }
+.game-title { min-width: 0; }
+.home-button { min-width: 52px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 3px; padding: 7px 9px 7px 7px; border: 1px solid #ffffff2b; border-radius: 12px; color: #fff8e9; background: #ffffff12; font-size: .78rem; font-weight: 800; cursor: pointer; }
+.home-button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.home-button:hover { background: #ffffff20; }
+.home-button:active { transform: translateY(1px); }
+.home-button:focus-visible { outline: 3px solid #efb04e; outline-offset: 2px; }
 .eyebrow { color: #d9a761; font-size: .7rem; font-weight: 800; letter-spacing: .16em; }
 .turn-badge { flex-shrink: 0; display: flex; align-items: center; gap: 7px; padding: 9px 11px; border: 1px solid #ffffff20; border-radius: 999px; background: #0b0806aa; font-size: .78rem; font-weight: 700; }
 .mini-stone { width: 13px; height: 13px; border-radius: 50%; display: inline-block; }
@@ -26,4 +32,10 @@ footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1
 .loading, .not-found { min-height: 100dvh; display: grid; place-items: center; color: #d9a761; }
 #blazor-error-ui { display: none; position: fixed; inset: auto 12px 12px; padding: 12px; background: #8c2d24; border-radius: 8px; z-index: 10; }
 #blazor-error-ui a { color: white; }
-@media (max-height: 720px) { .game-shell { justify-content: flex-start; } .hint { display: none; } header { margin-bottom: 8px; } footer { margin-top: 8px; } }
+@media (max-width: 390px) {
+    .game-header { gap: 7px; }
+    .home-button { min-width: 44px; padding-inline: 8px; }
+    .home-button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    .turn-badge { padding-inline: 9px; font-size: .72rem; }
+}
+@media (max-height: 720px) { .game-shell { justify-content: flex-start; } .hint { display: none; } .game-header { margin-bottom: 8px; } footer { margin-top: 8px; } }
