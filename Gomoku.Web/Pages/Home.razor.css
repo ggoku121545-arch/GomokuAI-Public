@@ -52,7 +52,10 @@
 .recent-form > div { display: flex; gap: 7px; }
 .recent-form span { width: 25px; height: 25px; display: grid; place-items: center; border: 2px solid #a6a7a7; border-radius: 50%; color: #8b8d91; font-size: .72rem; font-weight: 900; }
 
-.quick-match { width: 100%; min-height: 68px; display: grid; grid-template-columns: 42px 1fr 24px; align-items: center; gap: 10px; margin-top: 18px; padding: 0 18px; border: 3px solid #2f74cd; border-radius: 18px 14px 20px 16px; color: #1757aa; background: #dcecff; box-shadow: 2px 3px 0 #194e9630, inset 0 0 19px #3283df18; opacity: 1; transform: rotate(-.18deg); }
+.quick-match { width: 100%; min-height: 68px; display: grid; grid-template-columns: 42px 1fr 24px; align-items: center; gap: 10px; margin-top: 18px; padding: 0 18px; border: 3px solid #2f74cd; border-radius: 18px 14px 20px 16px; color: #1757aa; background: #dcecff; box-shadow: 2px 3px 0 #194e9630, inset 0 0 19px #3283df18; opacity: 1; cursor: pointer; transform: rotate(-.18deg); transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease; }
+.quick-match:hover { background: #cfe5ff; box-shadow: 3px 5px 0 #194e9638, inset 0 0 19px #3283df20; transform: translateY(-1px) rotate(-.18deg); }
+.quick-match:active { box-shadow: 1px 2px 0 #194e9630; transform: translateY(2px) rotate(-.18deg); }
+.quick-match:focus-visible, .gomoku-card:focus-visible { outline: 3px solid #ef9d2f; outline-offset: 3px; }
 .quick-match svg { width: 37px; height: 37px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .quick-match span { font-size: clamp(1.2rem, 6vw, 1.65rem); font-weight: 950; letter-spacing: -.04em; }
 .quick-match b { font-size: 2.7rem; font-weight: 400; line-height: 1; }
@@ -65,7 +68,10 @@
 .section-heading span { color: #6c6e72; font-size: .68rem; font-weight: 700; }
 .game-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(148px, 44%); gap: 10px; padding: 2px 3px 9px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
 .game-list::-webkit-scrollbar { display: none; }
-.game-card { position: relative; min-height: 207px; overflow: hidden; scroll-snap-align: start; border: 2px solid #44474b; border-radius: 12px 16px 13px 10px; background: #fffdf7c7; box-shadow: 2px 3px 0 #292c3022; }
+.game-card { position: relative; min-height: 207px; overflow: hidden; scroll-snap-align: start; padding: 0; border: 2px solid #44474b; border-radius: 12px 16px 13px 10px; color: inherit; background: #fffdf7c7; box-shadow: 2px 3px 0 #292c3022; font: inherit; text-align: left; }
+.gomoku-card { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+.gomoku-card:hover { box-shadow: 3px 5px 0 #292c3030; transform: translateY(-2px) rotate(-.2deg); }
+.gomoku-card:active { box-shadow: 1px 2px 0 #292c3022; transform: translateY(1px); }
 .game-card:nth-child(2) { transform: rotate(.45deg); }
 .game-card:nth-child(3) { transform: rotate(-.25deg); }
 .game-art { position: relative; height: 120px; border-bottom: 2px solid #46494d; background-color: #eee9dc; }

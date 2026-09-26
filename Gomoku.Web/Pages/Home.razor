@@ -1,4 +1,5 @@
 @page "/"
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
 
 <PageTitle>GomokuAI 홈</PageTitle>
 
@@ -57,7 +58,7 @@
         </div>
     </section>
 
-    <button type="button" class="quick-match" aria-describedby="quick-match-note" disabled>
+    <button type="button" class="quick-match" aria-describedby="quick-match-note" @onclick="StartGomoku">
         <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m5 3 5 5-2 2-5-5V3h2Zm14 0-5 5 2 2 5-5V3h-2Z" />
             <path d="m9 11 4 4-2 2-4-4m8-2-4 4 2 2 4-4" />
@@ -66,7 +67,7 @@
         <span>빠른 대전</span>
         <b aria-hidden="true">›</b>
     </button>
-    <p id="quick-match-note" class="step-note">3단계에서 AI 오목과 연결됩니다</p>
+    <p id="quick-match-note" class="step-note">바로 AI 오목 대전을 시작합니다</p>
 
     <section class="home-section" aria-labelledby="game-select-title">
         <div class="section-heading">
@@ -74,7 +75,7 @@
             <span>다른 게임도 준비 중</span>
         </div>
         <div class="game-list">
-            <article class="game-card gomoku-card">
+            <button type="button" class="game-card gomoku-card" aria-label="AI 오목 시작" @onclick="StartGomoku">
                 <div class="game-art board-art" aria-hidden="true">
                     <span class="mini-piece p1 black"></span>
                     <span class="mini-piece p2 white"></span>
@@ -87,7 +88,7 @@
                     <p>AI와 즐기는 두뇌 대결</p>
                 </div>
                 <span class="card-arrow" aria-hidden="true">›</span>
-            </article>
+            </button>
 
             <article class="game-card">
                 <div class="game-art flick-art" aria-hidden="true">
@@ -143,3 +144,10 @@
         </button>
     </nav>
 </main>
+
+@code {
+    private void StartGomoku()
+    {
+        Navigation.NavigateTo("game/gomoku");
+    }
+}
