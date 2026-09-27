@@ -51,6 +51,9 @@
 .recent-form > strong { font-size: .8rem; }
 .recent-form > div { display: flex; gap: 7px; }
 .recent-form span { width: 25px; height: 25px; display: grid; place-items: center; border: 2px solid #a6a7a7; border-radius: 50%; color: #8b8d91; font-size: .72rem; font-weight: 900; }
+.recent-form span.win { border-color: #3c9a6a; color: #18754a; background: #dff3e8; }
+.recent-form span.loss { border-color: #cf6666; color: #ac3535; background: #fae4e1; }
+.recent-form span.draw { border-color: #8a8d94; color: #5f6268; background: #ececee; }
 
 .quick-match { width: 100%; min-height: 68px; display: grid; grid-template-columns: 42px 1fr 24px; align-items: center; gap: 10px; margin-top: 18px; padding: 0 18px; border: 3px solid #2f74cd; border-radius: 18px 14px 20px 16px; color: #1757aa; background: #dcecff; box-shadow: 2px 3px 0 #194e9630, inset 0 0 19px #3283df18; opacity: 1; cursor: pointer; transform: rotate(-.18deg); transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease; }
 .quick-match:hover { background: #cfe5ff; box-shadow: 3px 5px 0 #194e9638, inset 0 0 19px #3283df20; transform: translateY(-1px) rotate(-.18deg); }
@@ -102,6 +105,23 @@
 .empty-stones span:last-child { right: 0; bottom: 0; background: #f7f4eb; }
 .empty-history strong { display: block; margin-bottom: 3px; font-size: .88rem; }
 .empty-history p { margin: 0; color: #707277; font-size: .68rem; line-height: 1.45; }
+.recent-match-list { overflow: hidden; border: 2px solid #717378; border-radius: 12px 16px 11px 14px; background: #fffdf6a8; }
+.recent-match { display: grid; grid-template-columns: 45px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 70px; padding: 10px 12px; }
+.recent-match + .recent-match { border-top: 2px solid #70727755; }
+.recent-game-icon { position: relative; width: 43px; height: 43px; border: 1.5px solid #55585d; border-radius: 9px; background-image: linear-gradient(#5554 1px, transparent 1px), linear-gradient(90deg, #5554 1px, transparent 1px); background-size: 10px 10px; background-position: 5px 5px; background-color: #eee6d3; }
+.recent-game-icon span { position: absolute; width: 15px; height: 15px; border: 1px solid #34363a; border-radius: 50%; box-shadow: 1px 2px 2px #0004; }
+.recent-game-icon span:first-child { left: 9px; top: 12px; background: #17181a; }
+.recent-game-icon span:last-child { right: 7px; bottom: 8px; background: #fffdf7; }
+.recent-match-copy { min-width: 0; }
+.recent-match-copy strong { display: block; margin-bottom: 3px; font-size: .9rem; }
+.recent-match-copy span { display: block; overflow: hidden; color: #6b6d72; font-size: .66rem; text-overflow: ellipsis; white-space: nowrap; }
+.recent-result { text-align: right; }
+.recent-result strong, .recent-result time { display: block; }
+.recent-result strong { font-size: .86rem; }
+.recent-result time { margin-top: 4px; color: #74767a; font-size: .62rem; white-space: nowrap; }
+.recent-result.win strong { color: #22865a; }
+.recent-result.loss strong { color: #c04b4b; }
+.recent-result.draw strong { color: #666a70; }
 
 .bottom-nav { position: fixed; left: 50%; bottom: 0; z-index: 5; width: min(100%, 620px); display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 8px max(8px, env(safe-area-inset-bottom)); border-top: 2px solid #3e41465c; background: #f8f7f2ed; box-shadow: 0 -7px 22px #25282c12; backdrop-filter: blur(10px); transform: translateX(-50%); }
 .bottom-nav button { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 3px 2px; border: 0; color: #5e6065; background: transparent; opacity: .72; }

@@ -1,5 +1,6 @@
 @page "/game/gomoku"
 @inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject PlayerStatsStore StatsStore
 
 <PageTitle>오목 한판</PageTitle>
 <main class="game-shell">
@@ -54,8 +55,8 @@
     </section>
 
     <footer>
-        <button class="action primary" @onclick="NewGame">새 게임</button>
-        <button class="action" @onclick="Undo" disabled="@(game.Moves.Count == 0 || thinking)">무르기</button>
+        <button class="action primary" @onclick="NewGame" disabled="@thinking">새 게임</button>
+        <button class="action" @onclick="Undo" disabled="@(game.Moves.Count == 0 || thinking || game.Result != GameResult.Playing)">무르기</button>
     </footer>
     <p class="hint">흑돌을 놓아 다섯 개를 먼저 이어 보세요.</p>
 </main>
@@ -65,6 +66,7 @@
     private readonly GomokuAi ai = new();
     private BoardTheme selectedTheme = BoardThemes.Default;
     private bool thinking;
+    private bool resultRecorded;
 
     private string Status => game.Result switch
     {
@@ -81,17 +83,47 @@
 
     private async Task HumanMove(Position position)
     {
-        if (thinking || game.CurrentTurn != Stone.Black || !game.TryPlay(position) || game.Result != GameResult.Playing) return;
+        if (thinking || game.CurrentTurn != Stone.Black || !game.TryPlay(position)) return;
+
+        if (game.Result != GameResult.Playing)
+        {
+            await RecordCompletedGameAsync();
+            return;
+        }
+
         thinking = true;
         StateHasChanged();
-        await Task.Delay(180);
-        var move = ai.ChooseMove(game);
-        if (move is not null) game.TryPlay(move.Value);
-        thinking = false;
+        try
+        {
+            await Task.Delay(180);
+            var move = ai.ChooseMove(game);
+            if (move is not null) game.TryPlay(move.Value);
+        }
+        finally
+        {
+            thinking = false;
+        }
+
+        await RecordCompletedGameAsync();
+    }
+
+    private async Task RecordCompletedGameAsync()
+    {
+        if (resultRecorded || game.Result == GameResult.Playing) return;
+        resultRecorded = true;
+
+        var outcome = game.Result switch
+        {
+            GameResult.BlackWins => MatchOutcome.Win,
+            GameResult.WhiteWins => MatchOutcome.Loss,
+            _ => MatchOutcome.Draw
+        };
+
+        await StatsStore.RecordMatchAsync(outcome, game.Moves.Count, selectedTheme.Id);
     }
 
     private void SelectTheme(BoardTheme theme) => selectedTheme = theme;
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
-    private void NewGame() { game.Reset(); thinking = false; }
-    private void Undo() { if (!thinking) game.UndoRound(); }
+    private void NewGame() { game.Reset(); thinking = false; resultRecorded = false; }
+    private void Undo() { if (!thinking && game.Result == GameResult.Playing) game.UndoRound(); }
 }

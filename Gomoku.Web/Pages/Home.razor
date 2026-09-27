@@ -1,5 +1,6 @@
 @page "/"
 @inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject PlayerStatsStore StatsStore
 
 <PageTitle>GomokuAI 홈</PageTitle>
 
@@ -45,15 +46,26 @@
         </div>
 
         <div class="stats-grid" aria-label="플레이어 전적">
-            <div><strong>0승 0패</strong><span>총 전적</span></div>
-            <div><strong>--</strong><span>승률</span></div>
-            <div><strong>0연승</strong><span>연속 기록</span></div>
+            <div><strong>@TotalRecord</strong><span>총 전적</span></div>
+            <div><strong>@WinRate</strong><span>승률</span></div>
+            <div><strong>@(stats.CurrentWinStreak)연승</strong><span>현재 연승</span></div>
         </div>
 
         <div class="recent-form">
             <strong>최근 5경기</strong>
-            <div aria-label="아직 경기 기록 없음">
-                <span>–</span><span>–</span><span>–</span><span>–</span><span>–</span>
+            <div aria-label="@RecentFormLabel">
+                @for (var index = 0; index < 5; index++)
+                {
+                    if (index < stats.Matches.Count)
+                    {
+                        var outcome = stats.Matches[index].Outcome;
+                        <span class="@OutcomeClass(outcome)">@OutcomeLetter(outcome)</span>
+                    }
+                    else
+                    {
+                        <span>–</span>
+                    }
+                }
             </div>
         </div>
     </section>
@@ -117,12 +129,34 @@
     <section class="home-section recent-section" aria-labelledby="recent-games-title">
         <div class="section-heading">
             <h2 id="recent-games-title">최근 경기</h2>
-            <span>기록은 4단계에서 저장</span>
+            <span>이 기기에 자동 저장</span>
         </div>
-        <div class="empty-history">
-            <div class="empty-stones" aria-hidden="true"><span></span><span></span></div>
-            <div><strong>아직 경기 기록이 없어요</strong><p>첫 대전을 마치면 여기에 결과가 표시됩니다.</p></div>
-        </div>
+        @if (stats.Matches.Count == 0)
+        {
+            <div class="empty-history">
+                <div class="empty-stones" aria-hidden="true"><span></span><span></span></div>
+                <div><strong>아직 경기 기록이 없어요</strong><p>첫 대전을 마치면 여기에 결과가 표시됩니다.</p></div>
+            </div>
+        }
+        else
+        {
+            <div class="recent-match-list">
+                @foreach (var match in stats.Matches.Take(2))
+                {
+                    <article class="recent-match">
+                        <div class="recent-game-icon" aria-hidden="true"><span></span><span></span></div>
+                        <div class="recent-match-copy">
+                            <strong>오목</strong>
+                            <span>vs AI · @(match.MoveCount)수 · @ThemeName(match.BoardThemeId)</span>
+                        </div>
+                        <div class="recent-result @OutcomeClass(match.Outcome)">
+                            <strong>@OutcomeText(match.Outcome)</strong>
+                            <time datetime="@match.PlayedAtUtc.ToString("O")">@RelativeTime(match.PlayedAtUtc)</time>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
     </section>
 
     <nav class="bottom-nav" aria-label="주 메뉴">
@@ -146,8 +180,56 @@
 </main>
 
 @code {
+    private PlayerStats stats = new();
+
+    private string TotalRecord => stats.Draws == 0
+        ? $"{stats.Wins}승 {stats.Losses}패"
+        : $"{stats.Wins}승 {stats.Losses}패 {stats.Draws}무";
+    private string WinRate => stats.TotalGames == 0 ? "--" : $"{stats.WinRatePercent}%";
+    private string RecentFormLabel => stats.Matches.Count == 0
+        ? "아직 경기 기록 없음"
+        : $"최근 경기: {string.Join(", ", stats.Matches.Take(5).Select(match => OutcomeText(match.Outcome)))}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await StatsStore.LoadAsync();
+    }
+
     private void StartGomoku()
     {
         Navigation.NavigateTo("game/gomoku");
+    }
+
+    private static string OutcomeLetter(MatchOutcome outcome) => outcome switch
+    {
+        MatchOutcome.Win => "W",
+        MatchOutcome.Loss => "L",
+        _ => "D"
+    };
+
+    private static string OutcomeText(MatchOutcome outcome) => outcome switch
+    {
+        MatchOutcome.Win => "승리",
+        MatchOutcome.Loss => "패배",
+        _ => "무승부"
+    };
+
+    private static string OutcomeClass(MatchOutcome outcome) => outcome switch
+    {
+        MatchOutcome.Win => "win",
+        MatchOutcome.Loss => "loss",
+        _ => "draw"
+    };
+
+    private static string ThemeName(string themeId) =>
+        BoardThemes.All.FirstOrDefault(theme => theme.Id == themeId)?.Name ?? "기본판";
+
+    private static string RelativeTime(DateTimeOffset playedAtUtc)
+    {
+        var elapsed = DateTimeOffset.UtcNow - playedAtUtc;
+        if (elapsed < TimeSpan.Zero || elapsed < TimeSpan.FromMinutes(1)) return "방금 전";
+        if (elapsed < TimeSpan.FromHours(1)) return $"{(int)elapsed.TotalMinutes}분 전";
+        if (elapsed < TimeSpan.FromDays(1)) return $"{(int)elapsed.TotalHours}시간 전";
+        return $"{(int)elapsed.TotalDays}일 전";
     }
 }
