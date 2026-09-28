@@ -1,0 +1,74 @@
+/*
+  Fixed home visual baseline:
+  warm white paper, graphite-like outlines and blue as the primary accent.
+  New menu pages should reuse these tokens instead of introducing a glossy UI.
+*/
+.sketch-page {
+    --sketch-ink: #292b2e;
+    --sketch-soft-ink: #66686d;
+    --sketch-paper: #f8f7f2;
+    --sketch-panel: #fffefa9c;
+    --sketch-blue: #2d73d5;
+    --sketch-green: #22865a;
+    --sketch-red: #c04b4b;
+    width: min(100%, 620px);
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: max(20px, env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));
+    color: var(--sketch-ink);
+    background-color: var(--sketch-paper);
+    background-image:
+        radial-gradient(circle at 12% 18%, #20242b0a 0 1px, transparent 1.4px),
+        radial-gradient(circle at 78% 42%, #20242b08 0 1px, transparent 1.5px),
+        repeating-linear-gradient(7deg, transparent 0 14px, #36383c05 14px 15px);
+    background-size: 19px 23px, 27px 31px, auto;
+    box-shadow: 0 0 54px #0007;
+}
+
+.sketch-panel {
+    position: relative;
+    border: 2px solid #42454a;
+    border-radius: 19px 15px 21px 16px;
+    background: var(--sketch-panel);
+    box-shadow: 2px 3px 0 #30323828, inset 0 0 26px #79705f0c;
+}
+
+.subpage-header {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.subpage-header > div { min-width: 0; }
+.subpage-header > div > span { display: block; color: #777a80; font-size: .62rem; font-weight: 900; letter-spacing: .16em; }
+.subpage-header h1 { position: relative; display: inline-block; margin: 0; font-size: clamp(2rem, 10vw, 3rem); line-height: 1; letter-spacing: -.06em; transform: rotate(-.7deg); }
+.subpage-header h1::after { content: ""; position: absolute; left: 1px; right: -9px; bottom: -6px; border-top: 2px solid #303238aa; border-radius: 50%; transform: rotate(-1.5deg); }
+.subpage-header > strong { color: #5d6065; font-size: .74rem; white-space: nowrap; }
+
+.back-button {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 2px solid #56595e;
+    border-radius: 13px 10px 14px 11px;
+    color: var(--sketch-ink);
+    background: #fffdf7a6;
+    cursor: pointer;
+    transform: rotate(-.5deg);
+}
+
+.back-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.back-button:focus-visible { outline: 3px solid #ef9d2f; outline-offset: 2px; }
+
+@media (max-width: 380px) {
+    .sketch-page { padding-inline: 12px; }
+    .subpage-header { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sketch-panel, .subpage-header h1, .back-button { transform: none; }
+}

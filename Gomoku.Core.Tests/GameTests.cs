@@ -78,4 +78,27 @@ public class GameTests
         Assert.Equal(PlayerStats.MaxStoredMatches, stats.Matches.Count);
         Assert.Equal(PlayerStats.MaxStoredMatches + 4, stats.Matches[0].MoveCount);
     }
+
+    [Theory]
+    [InlineData("  PLAYER   01  ", "PLAYER 01")]
+    [InlineData("\n나만의\t이름\r", "나만의 이름")]
+    [InlineData("   ", PlayerSettings.DefaultPlayerName)]
+    public void PlayerSettingsNormalizesPlayerName(string input, string expected)
+    {
+        var settings = new PlayerSettings { PlayerName = input };
+
+        settings.Normalize();
+
+        Assert.Equal(expected, settings.PlayerName);
+    }
+
+    [Fact]
+    public void PlayerSettingsLimitsPlayerNameLength()
+    {
+        var settings = new PlayerSettings { PlayerName = new string('A', 40) };
+
+        settings.Normalize();
+
+        Assert.Equal(PlayerSettings.MaxPlayerNameLength, settings.PlayerName.Length);
+    }
 }

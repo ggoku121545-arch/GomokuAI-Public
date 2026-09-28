@@ -1,0 +1,101 @@
+@page "/settings"
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject PlayerSettingsStore SettingsStore
+@inject PlayerStatsStore StatsStore
+
+<PageTitle>설정 · GomokuAI</PageTitle>
+
+<main class="sketch-page settings-page">
+    <header class="subpage-header">
+        <button type="button" class="back-button" aria-label="홈으로 돌아가기" @onclick="GoHome">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
+        </button>
+        <div><span>MY GAME</span><h1>설정</h1></div>
+        <span aria-hidden="true"></span>
+    </header>
+
+    <section class="settings-section sketch-panel" aria-labelledby="profile-settings-title">
+        <div class="section-title">
+            <span class="pencil-icon" aria-hidden="true">✎</span>
+            <div><h2 id="profile-settings-title">플레이어 이름</h2><p>홈 화면에 표시되는 이름입니다.</p></div>
+        </div>
+        <label for="player-name-input">이름</label>
+        <div class="name-input-row">
+            <input id="player-name-input"
+                   maxlength="@PlayerSettings.MaxPlayerNameLength"
+                   autocomplete="off"
+                   @bind="playerName"
+                   @bind:event="oninput" />
+            <span>@playerName.Length / @PlayerSettings.MaxPlayerNameLength</span>
+        </div>
+        <button type="button" class="primary-button" @onclick="SaveSettings">이름 저장</button>
+        <p class="save-message" aria-live="polite">@saveMessage</p>
+    </section>
+
+    <section class="settings-section sketch-panel" aria-labelledby="storage-title">
+        <div class="section-title">
+            <span class="storage-icon" aria-hidden="true">▣</span>
+            <div><h2 id="storage-title">저장 방식</h2><p>서버 비용 없이 이 기기에 보관합니다.</p></div>
+        </div>
+        <ul>
+            <li>완료한 경기만 자동 저장</li>
+            <li>최대 100경기까지 보관</li>
+            <li>다른 기기와는 자동 동기화되지 않음</li>
+        </ul>
+    </section>
+
+    <section class="settings-section danger-section sketch-panel" aria-labelledby="data-title">
+        <div class="section-title">
+            <span class="eraser-icon" aria-hidden="true">▱</span>
+            <div><h2 id="data-title">전적 데이터</h2><p>현재 브라우저에 저장된 경기 기록을 관리합니다.</p></div>
+        </div>
+        @if (!confirmReset)
+        {
+            <button type="button" class="danger-button" @onclick="() => confirmReset = true">전적 초기화</button>
+        }
+        else
+        {
+            <div class="reset-confirm" role="alert">
+                <strong>모든 승·패 기록을 지울까요?</strong>
+                <p>삭제한 기록은 복구할 수 없습니다.</p>
+                <div>
+                    <button type="button" @onclick="() => confirmReset = false">취소</button>
+                    <button type="button" class="danger-button" @onclick="ClearStats">기록 삭제</button>
+                </div>
+            </div>
+        }
+        <p class="reset-message" aria-live="polite">@resetMessage</p>
+    </section>
+
+    <SketchBottomNav />
+</main>
+
+@code {
+    private string playerName = PlayerSettings.DefaultPlayerName;
+    private string saveMessage = string.Empty;
+    private string resetMessage = string.Empty;
+    private bool confirmReset;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await SettingsStore.LoadAsync();
+        playerName = settings.PlayerName;
+    }
+
+    private async Task SaveSettings()
+    {
+        var settings = new PlayerSettings { PlayerName = playerName };
+        var saved = await SettingsStore.SaveAsync(settings);
+        playerName = settings.PlayerName;
+        saveMessage = saved ? "이름을 저장했습니다." : "이름을 저장하지 못했습니다.";
+    }
+
+    private async Task ClearStats()
+    {
+        var cleared = await StatsStore.ClearAsync();
+        confirmReset = false;
+        resetMessage = cleared ? "전적을 초기화했습니다." : "전적을 초기화하지 못했습니다.";
+    }
+
+    private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
+}

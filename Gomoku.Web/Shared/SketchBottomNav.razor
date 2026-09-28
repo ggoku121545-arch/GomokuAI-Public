@@ -1,0 +1,28 @@
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+
+<nav class="sketch-bottom-nav" aria-label="주 메뉴">
+    <button type="button" class="@(Active == "home" ? "active" : null)" aria-current="@(Active == "home" ? "page" : null)" @onclick="GoHome">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8" /><path d="M5 10v11h14V10M9 21v-7h6v7" /></svg>
+        <span>홈</span>
+    </button>
+    <button type="button" class="@(Active == "game" ? "active" : null)" aria-current="@(Active == "game" ? "page" : null)" @onclick="GoGame">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8h10a5 5 0 0 1 4.8 6.5l-1.1 3.3a2 2 0 0 1-3.2.9L15 17H9l-2.5 1.7a2 2 0 0 1-3.2-.9l-1.1-3.3A5 5 0 0 1 7 8Z" /><path d="M7 12v4m-2-2h4m7-1h.01m3 2h.01" /></svg>
+        <span>게임</span>
+    </button>
+    <button type="button" disabled title="보관함은 6단계에서 추가됩니다">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v15H4zM7 3h10v3H7z" /><path d="M9 11h6" /></svg>
+        <span>보관함</span>
+    </button>
+    <button type="button" class="@(Active == "records" ? "active" : null)" aria-current="@(Active == "records" ? "page" : null)" @onclick="GoRecords">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10m7 10V4m7 16v-7" /></svg>
+        <span>기록</span>
+    </button>
+</nav>
+
+@code {
+    [Parameter] public string Active { get; set; } = string.Empty;
+
+    private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
+    private void GoGame() => Navigation.NavigateTo("game/gomoku");
+    private void GoRecords() => Navigation.NavigateTo("records");
+}

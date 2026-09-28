@@ -1,0 +1,114 @@
+@page "/records"
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject PlayerStatsStore StatsStore
+
+<PageTitle>경기 기록 · GomokuAI</PageTitle>
+
+<main class="sketch-page records-page">
+    <header class="subpage-header">
+        <button type="button" class="back-button" aria-label="홈으로 돌아가기" @onclick="GoHome">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
+        </button>
+        <div><span>MY GAME LOG</span><h1>기록</h1></div>
+        <strong>@stats.TotalGames 경기</strong>
+    </header>
+
+    <section class="summary-card sketch-panel" aria-label="전체 전적 요약">
+        <div class="record-total">
+            <span>총 전적</span>
+            <strong>@TotalRecord</strong>
+        </div>
+        <div class="summary-grid">
+            <div><strong>@stats.Wins</strong><span>승리</span></div>
+            <div><strong>@stats.Losses</strong><span>패배</span></div>
+            <div><strong>@stats.Draws</strong><span>무승부</span></div>
+            <div><strong>@WinRate</strong><span>승률</span></div>
+        </div>
+        <div class="streak-row">
+            <span>현재 @(stats.CurrentWinStreak)연승</span>
+            <span>최고 @(stats.BestWinStreak)연승</span>
+        </div>
+    </section>
+
+    <section class="history-section" aria-labelledby="history-title">
+        <div class="section-heading">
+            <h2 id="history-title">경기 내역</h2>
+            <span>최대 100경기 저장</span>
+        </div>
+
+        <div class="filter-row" role="group" aria-label="경기 결과 필터">
+            @foreach (var option in FilterOptions)
+            {
+                <button type="button"
+                        class="@(selectedFilter == option.Id ? "active" : null)"
+                        aria-pressed="@(selectedFilter == option.Id)"
+                        @onclick="() => selectedFilter = option.Id">@option.Label</button>
+            }
+        </div>
+
+        @if (stats.Matches.Count == 0)
+        {
+            <div class="empty-history sketch-panel">
+                <div class="empty-stones" aria-hidden="true"><span></span><span></span></div>
+                <strong>아직 저장된 경기가 없어요</strong>
+                <p>AI 오목을 끝까지 플레이하면 결과가 자동으로 기록됩니다.</p>
+                <button type="button" @onclick="StartGame">첫 경기 시작</button>
+            </div>
+        }
+        else if (!FilteredMatches.Any())
+        {
+            <div class="no-filter-result sketch-panel">이 결과에 해당하는 경기가 없습니다.</div>
+        }
+        else
+        {
+            <div class="history-list sketch-panel">
+                @foreach (var match in FilteredMatches)
+                {
+                    <article class="history-item">
+                        <div class="history-icon" aria-hidden="true"><span></span><span></span></div>
+                        <div class="history-copy">
+                            <div><strong>오목 · vs AI</strong><span class="result @MatchDisplay.OutcomeClass(match.Outcome)">@MatchDisplay.OutcomeText(match.Outcome)</span></div>
+                            <p>@(match.MoveCount)수 · @MatchDisplay.ThemeName(match.BoardThemeId)</p>
+                        </div>
+                        <time datetime="@match.PlayedAtUtc.ToString("O")">
+                            <strong>@MatchDisplay.RelativeTime(match.PlayedAtUtc)</strong>
+                            <span>@match.PlayedAtUtc.ToLocalTime().ToString("MM.dd HH:mm")</span>
+                        </time>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+    <SketchBottomNav Active="records" />
+</main>
+
+@code {
+    private static readonly (string Id, string Label)[] FilterOptions =
+    [
+        ("all", "전체"),
+        ("win", "승리"),
+        ("loss", "패배"),
+        ("draw", "무승부")
+    ];
+
+    private PlayerStats stats = new();
+    private string selectedFilter = "all";
+
+    private string TotalRecord => stats.Draws == 0
+        ? $"{stats.Wins}승 {stats.Losses}패"
+        : $"{stats.Wins}승 {stats.Losses}패 {stats.Draws}무";
+    private string WinRate => stats.TotalGames == 0 ? "--" : $"{stats.WinRatePercent}%";
+    private IEnumerable<MatchRecord> FilteredMatches => selectedFilter switch
+    {
+        "win" => stats.Matches.Where(match => match.Outcome == MatchOutcome.Win),
+        "loss" => stats.Matches.Where(match => match.Outcome == MatchOutcome.Loss),
+        "draw" => stats.Matches.Where(match => match.Outcome == MatchOutcome.Draw),
+        _ => stats.Matches
+    };
+
+    protected override async Task OnInitializedAsync() => stats = await StatsStore.LoadAsync();
+
+    private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
+    private void StartGame() => Navigation.NavigateTo("game/gomoku");
+}

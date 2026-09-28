@@ -47,4 +47,17 @@ public sealed class PlayerStatsStore(IJSRuntime js)
 
         return stats;
     }
+
+    public async ValueTask<bool> ClearAsync()
+    {
+        try
+        {
+            await js.InvokeVoidAsync("localStorage.removeItem", StorageKey);
+            return true;
+        }
+        catch (JSException)
+        {
+            return false;
+        }
+    }
 }
