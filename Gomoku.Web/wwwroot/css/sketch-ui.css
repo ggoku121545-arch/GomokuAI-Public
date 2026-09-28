@@ -3,6 +3,22 @@
   neutral white sketch paper, graphite-like outlines and colored-pencil blue.
   New menu pages should reuse these tokens instead of introducing a glossy UI.
 */
+@font-face {
+    font-family: "Gaegu Local";
+    src: url("../fonts/Gaegu-Bold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Gaegu Local";
+    src: url("../fonts/Gaegu-Bold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
 .sketch-page {
     --sketch-ink: #343332;
     --sketch-soft-ink: #605f5d;

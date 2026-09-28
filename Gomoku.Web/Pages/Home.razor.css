@@ -3,7 +3,7 @@
     --soft-ink: var(--sketch-soft-ink);
     --paper: var(--sketch-paper);
     --blue: var(--sketch-blue);
-    font-family: "Gaegu", "Nanum Pen Script", "Segoe Print", cursive;
+    font-family: "Gaegu Local", "Nanum Pen Script", "Segoe Print", cursive;
     font-weight: 400;
 }
 
