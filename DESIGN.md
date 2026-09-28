@@ -4,9 +4,10 @@ The home mockup chosen on 2026-09-28 is the fixed visual direction for the app m
 
 ## Keep
 
-- Warm white paper rather than a glossy or dark menu surface.
+- Neutral white-gray paper (`#f3f4f3`) sampled from the approved reference; do not tint the menu cream or beige.
 - Rough graphite-like outlines, slightly irregular corners and restrained shadows.
-- Blue pencil as the primary action and active-navigation color.
+- Handwritten `Gaegu` typography on the home and menu navigation, with sensible local fallbacks.
+- Colored-pencil blue (`#2c6bbf`) with pale scribbled fill as the primary action and active-navigation color.
 - Green, red and gold only for result, notification and rank accents.
 - Profile and record information before game selection.
 - Three game cards visible in one mobile row; do not replace them with a carousel.

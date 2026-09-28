@@ -35,7 +35,7 @@
             </div>
             <div class="profile-copy">
                 <h2 id="player-name">@settings.PlayerName</h2>
-                <p class="rank-line"><span class="rank-mark" aria-hidden="true">◇</span> 새싹 I · Lv.1</p>
+                <p class="rank-line"><span class="rank-mark" aria-hidden="true">I</span><span>새싹 I · Lv.1</span></p>
                 <div class="experience-row">
                     <div class="experience-track" role="progressbar" aria-label="경험치" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0">
                         <span></span>
@@ -83,7 +83,7 @@
     <section class="home-section" aria-labelledby="game-select-title">
         <div class="section-heading">
             <h2 id="game-select-title">게임 선택</h2>
-            <span>다른 게임도 준비 중</span>
+            <span>다른 게임도 즐겨보세요 <b aria-hidden="true">›</b></span>
         </div>
         <div class="game-list">
             <button type="button" class="game-card gomoku-card" aria-label="AI 오목 시작" @onclick="StartGomoku">
@@ -96,7 +96,7 @@
                 </div>
                 <div class="game-card-copy">
                     <h3>오목</h3>
-                    <p>AI와 즐기는 두뇌 대결</p>
+                    <p>가장 클래식한 두뇌 대결</p>
                 </div>
                 <span class="card-arrow" aria-hidden="true">›</span>
             </button>
@@ -109,18 +109,17 @@
                 </div>
                 <div class="game-card-copy">
                     <h3>알까기</h3>
-                    <p>나중에 추가될 게임</p>
+                    <p>손끝의 짜릿한 한 판</p>
                 </div>
-                <span class="coming-soon">준비 중</span>
+                <span class="card-arrow" aria-hidden="true">›</span>
             </article>
 
             <article class="game-card muted-card">
                 <div class="game-art mystery-art" aria-hidden="true"><span>?</span></div>
                 <div class="game-card-copy">
-                    <h3>새 게임</h3>
-                    <p>아이디어를 기다리는 중</p>
+                    <h3>준비 중</h3>
+                    <p>새로운 게임이<br />곧 찾아옵니다</p>
                 </div>
-                <span class="coming-soon">준비 중</span>
             </article>
         </div>
     </section>
@@ -133,7 +132,7 @@
         @if (stats.Matches.Count == 0)
         {
             <div class="empty-history">
-                <div class="empty-stones" aria-hidden="true"><span></span><span></span></div>
+                <div class="recent-game-icon empty-preview" aria-hidden="true"><span></span><span></span></div>
                 <div><strong>아직 경기 기록이 없어요</strong><p>첫 대전을 마치면 여기에 결과가 표시됩니다.</p></div>
             </div>
         }

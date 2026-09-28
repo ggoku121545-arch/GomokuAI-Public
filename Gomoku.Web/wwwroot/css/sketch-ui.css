@@ -1,28 +1,27 @@
 /*
   Fixed home visual baseline:
-  warm white paper, graphite-like outlines and blue as the primary accent.
+  neutral white sketch paper, graphite-like outlines and colored-pencil blue.
   New menu pages should reuse these tokens instead of introducing a glossy UI.
 */
 .sketch-page {
-    --sketch-ink: #292b2e;
-    --sketch-soft-ink: #66686d;
-    --sketch-paper: #f8f7f2;
-    --sketch-panel: #fffefa9c;
-    --sketch-blue: #2d73d5;
+    --sketch-ink: #343332;
+    --sketch-soft-ink: #605f5d;
+    --sketch-paper: #f3f4f3;
+    --sketch-panel: #f7f7f5b8;
+    --sketch-blue: #2c6bbf;
     --sketch-green: #22865a;
     --sketch-red: #c04b4b;
-    width: min(100%, 620px);
+    width: min(100%, 480px);
     min-height: 100dvh;
     margin: 0 auto;
     padding: max(20px, env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));
     color: var(--sketch-ink);
+    color-scheme: light;
     background-color: var(--sketch-paper);
-    background-image:
-        radial-gradient(circle at 12% 18%, #20242b0a 0 1px, transparent 1.4px),
-        radial-gradient(circle at 78% 42%, #20242b08 0 1px, transparent 1.5px),
-        repeating-linear-gradient(7deg, transparent 0 14px, #36383c05 14px 15px);
-    background-size: 19px 23px, 27px 31px, auto;
-    box-shadow: 0 0 54px #0007;
+    background-image: url("../paper-texture.svg");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+    box-shadow: 0 0 42px #0004;
 }
 
 .sketch-panel {
