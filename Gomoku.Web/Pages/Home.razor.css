@@ -31,9 +31,196 @@
     -webkit-user-drag: none;
 }
 
-.home-hotspot {
+.dynamic-player-name,
+.dynamic-stat,
+.dynamic-recent-form,
+.dynamic-history {
     position: absolute;
     z-index: 2;
+    pointer-events: none;
+    font-family: "Gaegu Local", "Nanum Pen Script", "Segoe Print", cursive;
+}
+
+.dynamic-player-name,
+.dynamic-stat,
+.dynamic-recent-form,
+.dynamic-history-row {
+    background-color: rgb(247 247 244 / 98%);
+    background-image: repeating-linear-gradient(-10deg, transparent 0 10px, rgb(67 66 62 / 3%) 10px 11px);
+}
+
+.dynamic-player-name {
+    left: 30.2%;
+    top: 9.1%;
+    width: 39.2%;
+    height: 4.5%;
+    display: flex;
+    align-items: center;
+    padding: 0 .7%;
+    overflow: hidden;
+    color: #292927;
+    font-size: clamp(1.25rem, 6.4vw, 1.72rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -.025em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: rotate(-.25deg);
+}
+
+.dynamic-stat {
+    top: 23.1%;
+    height: 3.8%;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: #343331;
+    font-size: clamp(1.02rem, 5.5vw, 1.48rem);
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.dynamic-record { left: 7.4%; width: 27.1%; }
+.dynamic-win-rate { left: 39.2%; width: 22%; }
+.dynamic-streak { left: 70.3%; width: 21.5%; }
+
+.dynamic-recent-form {
+    left: 37.4%;
+    top: 31.05%;
+    width: 49.1%;
+    height: 5.7%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(5px, 1.7vw, 8px);
+}
+
+.dynamic-recent-form span {
+    width: clamp(24px, 7vw, 30px);
+    height: clamp(24px, 7vw, 30px);
+    display: grid;
+    place-items: center;
+    border: 2px solid #979895;
+    border-radius: 50% 47% 52% 48%;
+    color: #797a78;
+    background: #f1f1ef;
+    font-size: clamp(.75rem, 3.5vw, .94rem);
+    font-weight: 700;
+    line-height: 1;
+    transform: rotate(-2deg);
+}
+
+.dynamic-recent-form span.win {
+    border-color: #4e9c70;
+    color: #278357;
+    background: repeating-linear-gradient(-12deg, #e7f4ec 0 5px, #c0e0ca 6px 7px);
+}
+
+.dynamic-recent-form span.loss {
+    border-color: #d17171;
+    color: #b84242;
+    background: repeating-linear-gradient(-12deg, #f8e4e3 0 5px, #efc0bd 6px 7px);
+}
+
+.dynamic-recent-form span.draw {
+    border-color: #898c91;
+    color: #5d6065;
+    background: #e9e9e9;
+}
+
+.dynamic-history {
+    left: 15.2%;
+    top: 78%;
+    width: 76.2%;
+    height: 14.25%;
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    overflow: hidden;
+}
+
+.dynamic-history-row {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22% 27%;
+    align-items: center;
+    column-gap: 2%;
+    padding: 0 1.8%;
+    color: #333230;
+}
+
+.dynamic-history-row + .dynamic-history-row {
+    border-top: 1px solid rgb(88 87 84 / 45%);
+}
+
+.dynamic-history-row.empty {
+    grid-template-columns: 1fr;
+}
+
+.dynamic-match-copy {
+    min-width: 0;
+}
+
+.dynamic-match-copy strong,
+.dynamic-match-copy span,
+.dynamic-match-result strong,
+.dynamic-match-result span {
+    display: block;
+}
+
+.dynamic-match-copy strong {
+    overflow: hidden;
+    font-size: clamp(.8rem, 3.8vw, 1rem);
+    font-weight: 700;
+    line-height: .9;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dynamic-match-copy span {
+    margin-top: 2px;
+    overflow: hidden;
+    color: #555451;
+    font-size: clamp(.58rem, 2.65vw, .72rem);
+    line-height: .95;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dynamic-match-result {
+    text-align: center;
+}
+
+.dynamic-match-result strong {
+    font-size: clamp(.8rem, 3.9vw, 1.04rem);
+    font-weight: 700;
+    line-height: .9;
+}
+
+.dynamic-match-result span {
+    margin-top: 2px;
+    color: #4f4e4b;
+    font-size: clamp(.62rem, 2.8vw, .75rem);
+    line-height: 1;
+}
+
+.dynamic-match-result.win strong { color: #25835a; }
+.dynamic-match-result.loss strong { color: #c04b4b; }
+.dynamic-match-result.draw strong { color: #66696e; }
+
+.dynamic-history time {
+    padding-left: 5%;
+    border-left: 1px solid rgb(88 87 84 / 45%);
+    color: #454440;
+    font-size: clamp(.62rem, 2.8vw, .75rem);
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.home-hotspot {
+    position: absolute;
+    z-index: 3;
     min-width: 0;
     min-height: 0;
     margin: 0;

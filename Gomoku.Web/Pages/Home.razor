@@ -1,5 +1,7 @@
 @page "/"
 @inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject PlayerStatsStore StatsStore
+@inject PlayerSettingsStore SettingsStore
 
 <PageTitle>GomokuAI 홈</PageTitle>
 
@@ -9,6 +11,63 @@
              src="images/home-reference.webp"
              alt="연필로 그린 GomokuAI 홈 화면"
              draggable="false" />
+
+        <div class="dynamic-player-name" aria-label="플레이어 이름">
+            @settings.PlayerName
+        </div>
+
+        <div class="dynamic-stat dynamic-record" aria-label="총 전적">@TotalRecord</div>
+        <div class="dynamic-stat dynamic-win-rate" aria-label="승률">@WinRate</div>
+        <div class="dynamic-stat dynamic-streak" aria-label="연승 기록">@(stats.CurrentWinStreak)연승</div>
+
+        <div class="dynamic-recent-form" aria-label="@RecentFormLabel">
+            @for (var index = 0; index < 5; index++)
+            {
+                if (index < stats.Matches.Count)
+                {
+                    var outcome = stats.Matches[index].Outcome;
+                    <span class="@MatchDisplay.OutcomeClass(outcome)">@MatchDisplay.OutcomeLetter(outcome)</span>
+                }
+                else
+                {
+                    <span>–</span>
+                }
+            }
+        </div>
+
+        <div class="dynamic-history" aria-label="최근 경기 기록">
+            @for (var index = 0; index < 2; index++)
+            {
+                if (index < stats.Matches.Count)
+                {
+                    var match = stats.Matches[index];
+                    <div class="dynamic-history-row">
+                        <div class="dynamic-match-copy">
+                            <strong>오목</strong>
+                            <span>vs AI · @MatchDisplay.ThemeName(match.BoardThemeId)</span>
+                        </div>
+                        <div class="dynamic-match-result @MatchDisplay.OutcomeClass(match.Outcome)">
+                            <strong>@MatchDisplay.OutcomeText(match.Outcome)</strong>
+                            <span>@(match.MoveCount)수</span>
+                        </div>
+                        <time datetime="@match.PlayedAtUtc.ToString("O")">@MatchDisplay.RelativeTime(match.PlayedAtUtc)</time>
+                    </div>
+                }
+                else if (index == 0)
+                {
+                    <div class="dynamic-history-row empty">
+                        <div class="dynamic-match-copy">
+                            <strong>경기 기록 없음</strong>
+                            <span>첫 대전을 마치면 저장됩니다</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="dynamic-history-row empty" aria-hidden="true"></div>
+                }
+            }
+        </div>
 
         <button type="button"
                 class="home-hotspot notification-hotspot"
@@ -84,6 +143,23 @@
 </main>
 
 @code {
+    private PlayerStats stats = new();
+    private PlayerSettings settings = new();
+
+    private string TotalRecord => stats.Draws == 0
+        ? $"{stats.Wins}승 {stats.Losses}패"
+        : $"{stats.Wins}승 {stats.Losses}패 {stats.Draws}무";
+    private string WinRate => stats.TotalGames == 0 ? "--" : $"{stats.WinRatePercent}%";
+    private string RecentFormLabel => stats.Matches.Count == 0
+        ? "아직 경기 기록 없음"
+        : $"최근 경기: {string.Join(", ", stats.Matches.Take(5).Select(match => MatchDisplay.OutcomeText(match.Outcome)))}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await StatsStore.LoadAsync();
+        settings = await SettingsStore.LoadAsync();
+    }
+
     private void StartGomoku() => Navigation.NavigateTo("game/gomoku");
     private void OpenRecords() => Navigation.NavigateTo("records");
     private void OpenSettings() => Navigation.NavigateTo("settings");
