@@ -71,12 +71,14 @@
     </section>
 
     <button type="button" class="quick-match" @onclick="StartGomoku">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m5 3 5 5-2 2-5-5V3h2Zm14 0-5 5 2 2 5-5V3h-2Z" />
-            <path d="m9 11 4 4-2 2-4-4m8-2-4 4 2 2 4-4" />
-            <path d="M9 17 6 20m9-3 3 3" />
-        </svg>
-        <span>빠른 대전</span>
+        <span class="quick-match-label">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 3 5 5-2 2-5-5V3h2Zm14 0-5 5 2 2 5-5V3h-2Z" />
+                <path d="m9 11 4 4-2 2-4-4m8-2-4 4 2 2 4-4" />
+                <path d="M9 17 6 20m9-3 3 3" />
+            </svg>
+            <strong>빠른 대전</strong>
+        </span>
         <b aria-hidden="true">›</b>
     </button>
 
@@ -93,6 +95,11 @@
                     <span class="mini-piece p3 black"></span>
                     <span class="mini-piece p4 white"></span>
                     <span class="mini-piece p5 black"></span>
+                    <span class="mini-piece p6 white"></span>
+                    <span class="mini-piece p7 black"></span>
+                    <span class="mini-piece p8 white"></span>
+                    <span class="mini-piece p9 black"></span>
+                    <span class="mini-piece p10 white"></span>
                 </div>
                 <div class="game-card-copy">
                     <h3>오목</h3>
@@ -115,7 +122,10 @@
             </article>
 
             <article class="game-card muted-card">
-                <div class="game-art mystery-art" aria-hidden="true"><span>?</span></div>
+                <div class="game-art mystery-art" aria-hidden="true">
+                    <span class="mystery-stone"></span>
+                    <span class="mystery-target"></span>
+                </div>
                 <div class="game-card-copy">
                     <h3>준비 중</h3>
                     <p>새로운 게임이<br />곧 찾아옵니다</p>
@@ -132,7 +142,9 @@
         @if (stats.Matches.Count == 0)
         {
             <div class="empty-history">
-                <div class="recent-game-icon empty-preview" aria-hidden="true"><span></span><span></span></div>
+                <div class="recent-game-icon empty-preview" aria-hidden="true">
+                    <span class="r1"></span><span class="r2"></span><span class="r3"></span><span class="r4"></span><span class="r5"></span>
+                </div>
                 <div><strong>아직 경기 기록이 없어요</strong><p>첫 대전을 마치면 여기에 결과가 표시됩니다.</p></div>
             </div>
         }
@@ -142,7 +154,9 @@
                 @foreach (var match in stats.Matches.Take(2))
                 {
                     <article class="recent-match">
-                        <div class="recent-game-icon" aria-hidden="true"><span></span><span></span></div>
+                        <div class="recent-game-icon" aria-hidden="true">
+                            <span class="r1"></span><span class="r2"></span><span class="r3"></span><span class="r4"></span><span class="r5"></span>
+                        </div>
                         <div class="recent-match-copy">
                             <strong>오목</strong>
                             <span>vs AI · @(match.MoveCount)수 · @MatchDisplay.ThemeName(match.BoardThemeId)</span>

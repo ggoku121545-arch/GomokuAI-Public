@@ -19,6 +19,11 @@
     font-display: swap;
 }
 
+html:has(.sketch-page),
+body:has(.sketch-page) {
+    background: #f3f4f3;
+}
+
 .sketch-page {
     --sketch-ink: #343332;
     --sketch-soft-ink: #605f5d;

@@ -3,10 +3,10 @@
     left: 50%;
     bottom: 0;
     z-index: 20;
-    width: min(100%, 480px);
+    width: min(100%, 432px);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    padding: 7px 8px max(7px, env(safe-area-inset-bottom));
+    padding: 2px 6px max(2px, env(safe-area-inset-bottom));
     border-top: 2px solid #605f5d9c;
     background: #f3f4f3f2 url("paper-texture.svg");
     background-size: 180px 180px;
@@ -16,13 +16,13 @@
 
 button {
     min-width: 0;
-    min-height: 55px;
+    min-height: 48px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    padding: 3px 2px;
+    gap: 0;
+    padding: 1px 2px;
     border: 0;
     color: #4f4e4c;
     background: transparent;
@@ -33,5 +33,7 @@ button {
 button.active { color: #2c6bbf; opacity: 1; }
 button:disabled { cursor: default; opacity: .42; }
 button:focus-visible { outline: 3px solid #ef9d2f; outline-offset: -2px; border-radius: 10px; }
-svg { width: 29px; height: 29px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transform: rotate(-1deg); }
-span { font-size: .82rem; font-weight: 700; line-height: .9; }
+svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transform: rotate(-1deg); }
+.home-fill { fill: transparent; stroke: none; }
+.nav-home.active .home-fill { fill: currentColor; }
+span { font-size: .94rem; font-weight: 700; line-height: .85; }

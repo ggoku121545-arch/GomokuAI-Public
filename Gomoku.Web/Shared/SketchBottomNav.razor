@@ -1,8 +1,8 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager Navigation
 
 <nav class="sketch-bottom-nav" aria-label="주 메뉴">
-    <button type="button" class="@(Active == "home" ? "active" : null)" aria-current="@(Active == "home" ? "page" : null)" @onclick="GoHome">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8" /><path d="M5 10v11h14V10M9 21v-7h6v7" /></svg>
+    <button type="button" class="nav-home @(Active == "home" ? "active" : null)" aria-current="@(Active == "home" ? "page" : null)" @onclick="GoHome">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="home-fill" d="m2.8 10.9 9.2-8 9.2 8-1.9 2.1v8.1h-5v-6.4H9.7v6.4h-5V13Z" /><path d="m2.8 10.9 9.2-8 9.2 8M4.7 13v8.1h5v-6.4h4.6v6.4h5V13" /></svg>
         <span>홈</span>
     </button>
     <button type="button" class="@(Active == "game" ? "active" : null)" aria-current="@(Active == "game" ? "page" : null)" @onclick="GoGame">
