@@ -54,7 +54,7 @@
 .recent-form span.loss { border-color: #d57373; color: #b24747; background: repeating-linear-gradient(-12deg, #f9e7e5 0 5px, #efc1bd 6px 7px); }
 .recent-form span.draw { border-color: #8a8d94; color: #5f6268; background: #ececee; }
 
-.quick-match { position: relative; width: 100%; min-height: clamp(50px, 13.9vw, 60px); display: grid; place-items: center; margin: clamp(8px, 2.3vw, 10px) 0; padding: 0 16px; overflow: hidden; border: 3px solid #619ee6; border-radius: 17px 13px 20px 15px; color: #2c6bbf; background-color: #aad2f199; background-image: repeating-linear-gradient(-12deg, transparent 0 6px, #619ee627 6px 8px); box-shadow: 2px 3px 0 #2c6bbf2b, inset 0 0 0 2px #f3f4f36b; opacity: 1; cursor: pointer; transform: rotate(-.18deg); transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease; }
+.quick-match { position: relative; width: 100%; min-height: clamp(50px, 13.9vw, 60px); display: grid; place-items: center; margin: clamp(8px, 2.3vw, 10px) 0 clamp(4px, 1.15vw, 5px); padding: 0 16px; overflow: hidden; border: 3px solid #619ee6; border-radius: 17px 13px 20px 15px; color: #2c6bbf; background-color: #aad2f199; background-image: repeating-linear-gradient(-12deg, transparent 0 6px, #619ee627 6px 8px); box-shadow: 2px 3px 0 #2c6bbf2b, inset 0 0 0 2px #f3f4f36b; opacity: 1; cursor: pointer; transform: rotate(-.18deg); transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease; }
 .quick-match::after { content: ""; position: absolute; inset: 3px 3px 3px 4px; pointer-events: none; border: 1px solid #2c6bbf7a; border-radius: 13px 17px 14px 18px; transform: rotate(.2deg); }
 .quick-match:hover { background-color: #9fcaf0b3; box-shadow: 3px 5px 0 #2c6bbf30, inset 0 0 0 2px #f3f4f36b; transform: translateY(-1px) rotate(-.18deg); }
 .quick-match:active { box-shadow: 1px 2px 0 #194e9630; transform: translateY(2px) rotate(-.18deg); }
@@ -75,7 +75,7 @@
 .section-link:focus-visible { outline: 3px solid #ef9d2f; outline-offset: 2px; border-radius: 6px; }
 
 .game-list { display: grid; grid-template-columns: 1.36fr 1.36fr 1fr; gap: clamp(6px, 1.62vw, 7px); padding: 1px 0 0; }
-.game-card { position: relative; min-width: 0; height: clamp(138px, 38.2vw, 165px); overflow: hidden; padding: 0; border: 2px solid #605f5d; border-radius: 11px 16px 13px 9px; color: inherit; background-color: #f5f5f2c7; background-image: repeating-linear-gradient(-9deg, transparent 0 10px, #605f5d08 10px 11px); box-shadow: 2px 3px 0 #605f5d22; font: inherit; text-align: left; }
+.game-card { position: relative; min-width: 0; height: clamp(138px, 37.8vw, 163px); overflow: hidden; padding: 0; border: 2px solid #605f5d; border-radius: 11px 16px 13px 9px; color: inherit; background-color: #f5f5f2c7; background-image: repeating-linear-gradient(-9deg, transparent 0 10px, #605f5d08 10px 11px); box-shadow: 2px 3px 0 #605f5d22; font: inherit; text-align: left; }
 .gomoku-card { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
 .gomoku-card:hover { box-shadow: 3px 5px 0 #292c3030; transform: translateY(-2px) rotate(-.2deg); }
 .gomoku-card:active { box-shadow: 1px 2px 0 #292c3022; transform: translateY(1px); }
