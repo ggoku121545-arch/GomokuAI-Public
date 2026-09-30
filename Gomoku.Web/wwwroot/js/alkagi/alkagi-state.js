@@ -1,0 +1,141 @@
+export const BOARD = Object.freeze({
+  width: 1000,
+  height: 600,
+  left: 42,
+  right: 958,
+  top: 42,
+  bottom: 558,
+  radius: 25,
+  maxPull: 132,
+});
+
+export function createGame(player1Name, player2Name) {
+  const game = {
+    players: [player1Name || "플레이어 1", player2Name || "플레이어 2"],
+    currentPlayer: 1,
+    pieces: [],
+    aim: null,
+    isAiming: false,
+    isMoving: false,
+    shotInProgress: false,
+    turnsPlayed: 0,
+    startedAt: new Date(),
+    result: null,
+  };
+  resetGame(game);
+  return game;
+}
+
+export function resetGame(game) {
+  game.currentPlayer = 1;
+  game.pieces = [];
+  game.aim = null;
+  game.isAiming = false;
+  game.isMoving = false;
+  game.shotInProgress = false;
+  game.turnsPlayed = 0;
+  game.startedAt = new Date();
+  game.result = null;
+
+  const columns = [365, 500, 635];
+  const rows = {
+    1: [138, 196],
+    2: [404, 462],
+  };
+  for (const player of [1, 2]) {
+    for (const y of rows[player]) {
+      for (const x of columns) {
+        game.pieces.push({
+          id: `${player}-${game.pieces.length}`,
+          player,
+          x: x + (y === rows[player][1] ? 7 : -6),
+          y,
+          vx: 0,
+          vy: 0,
+          alive: true,
+        });
+      }
+    }
+  }
+}
+
+export function beginAim(game, piece, point) {
+  if (game.result || game.isMoving || game.isAiming || !piece?.alive || piece.player !== game.currentPlayer) return false;
+  game.isAiming = true;
+  game.aim = { pieceId: piece.id, originX: piece.x, originY: piece.y, pointerX: point.x, pointerY: point.y, pullX: 0, pullY: 0, power: 0 };
+  updateAim(game, point);
+  return true;
+}
+
+export function updateAim(game, point) {
+  if (!game.isAiming || !game.aim) return;
+  const aim = game.aim;
+  let pullX = point.x - aim.originX;
+  let pullY = point.y - aim.originY;
+  const distance = Math.hypot(pullX, pullY);
+  if (distance > BOARD.maxPull) {
+    const ratio = BOARD.maxPull / distance;
+    pullX *= ratio;
+    pullY *= ratio;
+  }
+  aim.pointerX = point.x;
+  aim.pointerY = point.y;
+  aim.pullX = pullX;
+  aim.pullY = pullY;
+  aim.power = Math.min(1, Math.hypot(pullX, pullY) / BOARD.maxPull);
+}
+
+export function releaseAim(game) {
+  if (!game.isAiming || !game.aim) return false;
+  const aim = game.aim;
+  const piece = game.pieces.find((item) => item.id === aim.pieceId && item.alive);
+  const pull = Math.hypot(aim.pullX, aim.pullY);
+  game.isAiming = false;
+  game.aim = null;
+  if (!piece || pull < 7) return false;
+
+  const force = Math.min(pull, BOARD.maxPull) * 6.4;
+  piece.vx = (-aim.pullX / pull) * force;
+  piece.vy = (-aim.pullY / pull) * force;
+  game.isMoving = true;
+  game.shotInProgress = true;
+  game.turnsPlayed += 1;
+  return true;
+}
+
+export function livingPieces(game, player = null) {
+  return game.pieces.filter((piece) => piece.alive && (player === null || piece.player === player));
+}
+
+export function finishTurn(game) {
+  game.isMoving = false;
+  game.shotInProgress = false;
+  const player1Remaining = livingPieces(game, 1).length;
+  const player2Remaining = livingPieces(game, 2).length;
+
+  if (player1Remaining === 0 || player2Remaining === 0) {
+    const winner = player1Remaining === 0 ? 2 : 1;
+    game.result = {
+      mode: "alkagi",
+      winner,
+      winnerName: game.players[winner - 1],
+      player1Remaining,
+      player2Remaining,
+      turnsPlayed: game.turnsPlayed,
+      finishedAtUtc: new Date().toISOString(),
+    };
+    return game.result;
+  }
+
+  game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
+  return null;
+}
+
+export function snapshot(game) {
+  return {
+    currentPlayer: game.currentPlayer,
+    player1Remaining: livingPieces(game, 1).length,
+    player2Remaining: livingPieces(game, 2).length,
+    isMoving: game.isMoving,
+  };
+}
