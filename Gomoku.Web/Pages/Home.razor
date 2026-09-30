@@ -93,9 +93,9 @@
 
         <button type="button"
                 class="home-hotspot flick-hotspot"
-                aria-label="알까기 - 준비 중"
-                title="알까기는 준비 중입니다"
-                disabled></button>
+                aria-label="알까기 시작"
+                title="알까기"
+                @onclick="StartAlkagi"></button>
 
         <button type="button"
                 class="home-hotspot coming-soon-hotspot"
@@ -161,6 +161,7 @@
     }
 
     private void StartGomoku() => Navigation.NavigateTo("game/gomoku");
+    private void StartAlkagi() => Navigation.NavigateTo("game/alkagi");
     private void OpenRecords() => Navigation.NavigateTo("records");
     private void OpenSettings() => Navigation.NavigateTo("settings");
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
