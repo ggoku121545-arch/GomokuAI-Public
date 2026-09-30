@@ -14,24 +14,25 @@
         </button>
         <div class="alkagi-heading"><span>LOCAL 2 PLAYER</span><h1>알까기</h1></div>
         <div class="alkagi-turn @(currentPlayer == 1 ? "player-one" : "player-two")" aria-live="polite">
-            <i aria-hidden="true"></i><span>@(isMoving ? "돌이 움직이는 중" : $"{CurrentPlayerName} 차례")</span>
+            <i aria-hidden="true"></i>
+            <span>@(phase == "setup" ? $"{SetupPlayerName} 배치 중" : isMoving ? "돌이 움직이는 중" : $"{CurrentPlayerName} 차례")</span>
         </div>
     </header>
 
     <section class="alkagi-score" aria-label="플레이어와 남은 돌">
-        <div class="alkagi-player player-one @(currentPlayer == 1 ? "active" : null)">
+        <div class="alkagi-player player-one @(IsPlayerOneActive ? "active" : null)">
             <span class="player-stone" aria-hidden="true"></span>
             <div><strong>@player1Name</strong><span>빨강 · @(player1Remaining)개</span></div>
         </div>
         <span class="score-divider" aria-hidden="true">VS</span>
-        <div class="alkagi-player player-two @(currentPlayer == 2 ? "active" : null)">
+        <div class="alkagi-player player-two @(IsPlayerTwoActive ? "active" : null)">
             <span class="player-stone" aria-hidden="true"></span>
             <div><strong>@player2Name</strong><span>파랑 · @(player2Remaining)개</span></div>
         </div>
     </section>
 
     <p class="alkagi-instruction" aria-live="polite">
-        @(isMoving ? "돌이 모두 멈추면 다음 차례로 넘어갑니다." : "내 돌을 뒤로 당겼다가 놓아 튕기세요.")
+        @(phase == "setup" ? "자기 진영 안에서 돌을 드래그해 배치하세요. 큰 돌은 대장입니다." : isMoving ? "돌이 모두 멈추면 다음 차례로 넘어갑니다." : "내 돌을 뒤로 당겼다가 놓아 튕기세요.")
     </p>
 
     <section class="alkagi-board-frame" aria-label="알까기 판">
@@ -39,8 +40,18 @@
     </section>
 
     <footer class="alkagi-controls">
-        <button type="button" class="alkagi-button" @onclick="RestartGame">다시하기</button>
-        <button type="button" class="alkagi-button exit" @onclick="GoHome">나가기</button>
+        @if (phase == "setup")
+        {
+            <div class="alkagi-setup-actions">
+                <span>@(setupPlayer == 1 ? $"{player1Name}의 배치를 마치면 기기를 넘겨주세요." : $"{player2Name} 배치 후 대국이 시작됩니다.")</span>
+                <button type="button" class="alkagi-button setup-complete" @onclick="CompleteSetup">@(setupPlayer == 1 ? "1팀 배치 완료" : "2팀 배치 완료 · 대국 시작")</button>
+            </div>
+        }
+        else
+        {
+            <button type="button" class="alkagi-button" @onclick="RestartGame">다시하기</button>
+            <button type="button" class="alkagi-button exit" @onclick="GoHome">나가기</button>
+        }
     </footer>
 
     @if (result is not null)
@@ -66,12 +77,17 @@
     private string player1Name = "플레이어 1";
     private readonly string player2Name = "플레이어 2";
     private int currentPlayer = 1;
+    private int setupPlayer = 1;
+    private string phase = "setup";
     private int player1Remaining = 6;
     private int player2Remaining = 6;
     private bool isMoving;
     private bool initialized;
 
     private string CurrentPlayerName => currentPlayer == 1 ? player1Name : player2Name;
+    private string SetupPlayerName => setupPlayer == 1 ? player1Name : player2Name;
+    private bool IsPlayerOneActive => phase == "setup" ? setupPlayer == 1 : currentPlayer == 1;
+    private bool IsPlayerTwoActive => phase == "setup" ? setupPlayer == 2 : currentPlayer == 2;
 
     protected override async Task OnInitializedAsync()
     {
@@ -92,6 +108,8 @@
     public Task OnGameStateChanged(AlkagiStateSnapshot state)
     {
         currentPlayer = state.CurrentPlayer;
+        setupPlayer = state.SetupPlayer;
+        phase = state.Phase;
         player1Remaining = state.Player1Remaining;
         player2Remaining = state.Player2Remaining;
         isMoving = state.IsMoving;
@@ -104,6 +122,7 @@
     {
         result = completedResult;
         currentPlayer = completedResult.Winner;
+        phase = "finished";
         player1Remaining = completedResult.Player1Remaining;
         player2Remaining = completedResult.Player2Remaining;
         isMoving = false;
@@ -115,9 +134,16 @@
     {
         result = null;
         currentPlayer = 1;
+        setupPlayer = 1;
+        phase = "setup";
         player1Remaining = player2Remaining = 6;
         isMoving = false;
         if (initialized && module is not null) await module.InvokeVoidAsync("restart");
+    }
+
+    private async Task CompleteSetup()
+    {
+        if (module is not null) await module.InvokeVoidAsync("completeSetup");
     }
 
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
@@ -135,6 +161,8 @@
     public sealed class AlkagiStateSnapshot
     {
         public int CurrentPlayer { get; set; }
+        public string Phase { get; set; } = "setup";
+        public int SetupPlayer { get; set; } = 1;
         public int Player1Remaining { get; set; }
         public int Player2Remaining { get; set; }
         public bool IsMoving { get; set; }
