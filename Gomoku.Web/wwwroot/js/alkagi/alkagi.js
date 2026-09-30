@@ -21,11 +21,10 @@ export function start(boardCanvas, dotNetReference, player1Name, player2Name) {
   game = createGame(player1Name, player2Name);
   sentFinalResult = false;
   resizeCanvas();
-  disposeInput = attachInput(canvas, game, announceShot);
+  disposeInput = attachInput(canvas, game, requestFrame, notifyState);
   resizeObserver = new ResizeObserver(resizeCanvas);
   resizeObserver.observe(canvas);
   lastTime = performance.now();
-  animationFrame = requestAnimationFrame(tick);
   notifyState();
 }
 
@@ -33,11 +32,15 @@ export function restart() {
   if (!game) return;
   resetGame(game);
   sentFinalResult = false;
+  lastTime = performance.now();
+  renderGame(context, game);
   notifyState();
 }
 
 export function completeSetup() {
   if (!game || !completeSetupState(game)) return;
+  lastTime = performance.now();
+  renderGame(context, game);
   notifyState();
 }
 
@@ -69,6 +72,7 @@ function resizeCanvas() {
 }
 
 function tick(now) {
+  animationFrame = 0;
   if (!game || !context) return;
   const elapsed = Math.min((now - lastTime) / 1000, 0.05);
   lastTime = now;
@@ -82,11 +86,12 @@ function tick(now) {
     }
   }
   renderGame(context, game);
-  animationFrame = requestAnimationFrame(tick);
+  if (game.isMoving) animationFrame = requestAnimationFrame(tick);
 }
 
-function announceShot() {
-  notifyState();
+function requestFrame() {
+  if (game?.isMoving) lastTime = performance.now();
+  if (game && !animationFrame) animationFrame = requestAnimationFrame(tick);
 }
 
 function notifyState() {
