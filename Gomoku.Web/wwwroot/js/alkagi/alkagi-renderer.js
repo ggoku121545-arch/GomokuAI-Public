@@ -1,4 +1,4 @@
-import { BOARD, livingPieces } from "./alkagi-state.js";
+import { BOARD, livingPieces, pieceRadius } from "./alkagi-state.js";
 
 const ink = "#47443f";
 const colors = {
@@ -12,9 +12,36 @@ export function renderGame(context, game) {
   context.fillRect(0, 0, BOARD.width, BOARD.height);
   drawPaperMarks(context);
   drawSketchBorder(context);
+  drawSetupGuide(context, game);
   drawAim(context, game);
-  for (const piece of livingPieces(game)) drawPiece(context, piece, game.isAiming && game.aim?.pieceId === piece.id);
+  for (const piece of livingPieces(game)) {
+    drawPiece(context, piece, pieceRadius(piece), (game.isAiming && game.aim?.pieceId === piece.id) || (game.isPlacing && game.placementPieceId === piece.id));
+  }
   drawPowerMeter(context, game);
+}
+
+function drawSetupGuide(context, game) {
+  if (game.phase !== "setup") return;
+  const top = game.setupPlayer === 1;
+  context.save();
+  context.fillStyle = top ? "#c7534b" : "#4b82bd";
+  context.globalAlpha = 0.055;
+  context.fillRect(BOARD.left + 3, top ? BOARD.top + 3 : BOARD.setupDivider, BOARD.right - BOARD.left - 6, BOARD.setupDivider - BOARD.top - 3);
+  context.globalAlpha = 0.28;
+  context.setLineDash([10, 9]);
+  context.lineWidth = 2;
+  context.beginPath();
+  context.moveTo(BOARD.left + 8, BOARD.setupDivider);
+  context.lineTo(BOARD.right - 8, BOARD.setupDivider);
+  context.strokeStyle = ink;
+  context.stroke();
+  context.setLineDash([]);
+  context.globalAlpha = 0.62;
+  context.textAlign = "center";
+  context.font = "bold 19px 'Gaegu Local', sans-serif";
+  context.fillStyle = top ? "#8e302d" : "#31577f";
+  context.fillText(top ? "플레이어 1 배치" : "플레이어 2 배치", BOARD.width / 2, top ? BOARD.top + 30 : BOARD.bottom - 18);
+  context.restore();
 }
 
 function drawPaperMarks(context) {
@@ -55,8 +82,7 @@ function drawSketchBorder(context) {
   context.globalAlpha = 1;
 }
 
-function drawPiece(context, piece, selected) {
-  const radius = BOARD.radius;
+function drawPiece(context, piece, radius, selected) {
   const color = colors[piece.player];
   context.save();
   context.shadowColor = "#26231f3d";
@@ -92,6 +118,31 @@ function drawPiece(context, piece, selected) {
     context.stroke();
     context.setLineDash([]);
   }
+  if (piece.captain) drawCaptainMark(context, piece, radius);
+  context.restore();
+}
+
+function drawCaptainMark(context, piece, radius) {
+  const x = piece.x;
+  const y = piece.y - radius * 0.08;
+  const scale = radius / 33;
+  context.save();
+  context.translate(x, y);
+  context.scale(scale, scale);
+  context.beginPath();
+  context.moveTo(-12, 2);
+  context.lineTo(-10, -8);
+  context.lineTo(-4, -2);
+  context.lineTo(0, -12);
+  context.lineTo(5, -2);
+  context.lineTo(10, -8);
+  context.lineTo(12, 2);
+  context.closePath();
+  context.fillStyle = "#f0c45e";
+  context.strokeStyle = "#4e4636";
+  context.lineWidth = 1.8;
+  context.fill();
+  context.stroke();
   context.restore();
 }
 
