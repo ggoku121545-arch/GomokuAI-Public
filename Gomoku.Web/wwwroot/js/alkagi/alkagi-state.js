@@ -6,7 +6,7 @@ export const BOARD = Object.freeze({
   top: 42,
   bottom: 558,
   radius: 25,
-  maxPull: 132,
+  maxPull: 180,
   setupDivider: 300,
 });
 
@@ -15,7 +15,7 @@ export function pieceRadius(piece) {
 }
 
 export function pieceMass(piece) {
-  return piece.captain ? 3.5 : 1;
+  return piece.captain ? 2.8 : 1;
 }
 
 export function createGame(player1Name, player2Name) {
@@ -32,6 +32,10 @@ export function createGame(player1Name, player2Name) {
     turnsPlayed: 0,
     startedAt: new Date(),
     result: null,
+    fallingPieces: [],
+    impactEffects: [],
+    impactCooldowns: new Map(),
+    screenShake: null,
   };
   resetGame(game);
   return game;
@@ -51,6 +55,10 @@ export function resetGame(game) {
   game.turnsPlayed = 0;
   game.startedAt = new Date();
   game.result = null;
+  game.fallingPieces = [];
+  game.impactEffects = [];
+  game.impactCooldowns = new Map();
+  game.screenShake = null;
 
   const columns = [365, 500, 635];
   const rows = {
@@ -160,7 +168,7 @@ export function releaseAim(game) {
   game.aim = null;
   if (!piece || pull < 7) return false;
 
-  const force = Math.min(pull, BOARD.maxPull) * 6.4;
+  const force = Math.min(pull, BOARD.maxPull) * 7.8;
   piece.vx = (-aim.pullX / pull) * force;
   piece.vy = (-aim.pullY / pull) * force;
   game.isMoving = true;

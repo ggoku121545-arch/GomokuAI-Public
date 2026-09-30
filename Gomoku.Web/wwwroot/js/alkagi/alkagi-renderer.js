@@ -8,6 +8,12 @@ const colors = {
 
 export function renderGame(context, game) {
   context.clearRect(0, 0, BOARD.width, BOARD.height);
+  context.save();
+  if (game.screenShake) {
+    const progress = Math.max(0, 1 - game.screenShake.elapsed / game.screenShake.duration);
+    const intensity = game.screenShake.intensity * progress;
+    context.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
+  }
   context.fillStyle = "#fffdf7";
   context.fillRect(0, 0, BOARD.width, BOARD.height);
   drawPaperMarks(context);
@@ -17,7 +23,37 @@ export function renderGame(context, game) {
   for (const piece of livingPieces(game)) {
     drawPiece(context, piece, pieceRadius(piece), (game.isAiming && game.aim?.pieceId === piece.id) || (game.isPlacing && game.placementPieceId === piece.id));
   }
+  for (const falling of game.fallingPieces) drawFallingPiece(context, falling);
+  drawImpactEffects(context, game);
   drawPowerMeter(context, game);
+  context.restore();
+}
+
+function drawFallingPiece(context, falling) {
+  const progress = Math.min(1, falling.elapsed / falling.duration);
+  const { piece, radius, dx, dy } = falling;
+  context.save();
+  context.globalAlpha = 1 - progress;
+  context.translate(piece.x + dx * progress * 34, piece.y + dy * progress * 34);
+  context.rotate(progress * (dx === 0 ? 0.35 : 0.55) * (piece.player === 1 ? 1 : -1));
+  context.scale(1 + Math.sin(progress * Math.PI) * 0.14, Math.max(0.08, 1 - progress * 0.72));
+  drawPiece(context, piece, radius, false);
+  context.restore();
+}
+
+function drawImpactEffects(context, game) {
+  for (const effect of game.impactEffects) {
+    const progress = Math.min(1, effect.elapsed / effect.duration);
+    const radius = 10 + progress * (12 + effect.strength * 20);
+    context.save();
+    context.globalAlpha = (1 - progress) * (0.28 + effect.strength * 0.48);
+    context.strokeStyle = effect.strength > 0.55 ? "#bd7540" : ink;
+    context.lineWidth = 1.2 + effect.strength * 2;
+    context.beginPath();
+    context.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
+  }
 }
 
 function drawSetupGuide(context, game) {
@@ -159,9 +195,13 @@ function drawAim(context, game) {
   const color = colors[game.currentPlayer].dark;
 
   context.save();
-  context.globalAlpha = 0.82;
+  context.globalAlpha = 0.56 + aim.power * 0.4;
   context.strokeStyle = color;
-  context.lineWidth = 3;
+  context.lineWidth = 2 + aim.power * 2.4;
+  if (aim.power > 0.72) {
+    context.shadowColor = color;
+    context.shadowBlur = 3 + aim.power * 5;
+  }
   context.setLineDash([8, 6]);
   context.beginPath();
   context.moveTo(aim.originX, aim.originY);
@@ -186,12 +226,12 @@ function drawPowerMeter(context, game) {
   context.fillStyle = ink;
   context.fillText("힘", x - 27, y + 7);
   context.strokeStyle = ink;
-  context.lineWidth = 2;
+  context.lineWidth = 2 + game.aim.power * 1.3;
   context.beginPath();
   context.roundRect(x, y - 10, width, 16, 8);
   context.stroke();
   context.fillStyle = colors[game.currentPlayer].mid;
-  context.globalAlpha = 0.8;
+  context.globalAlpha = 0.66 + game.aim.power * 0.34;
   context.beginPath();
   context.roundRect(x + 3, y - 7, Math.max(0, (width - 6) * game.aim.power), 10, 5);
   context.fill();
