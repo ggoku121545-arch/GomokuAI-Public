@@ -1,4 +1,4 @@
-import { BOARD, livingPieces } from "./alkagi-state.js";
+import { BOARD, livingPieces, pieceMass, pieceRadius } from "./alkagi-state.js";
 
 const FRICTION = 4.6;
 const RESTITUTION = 0.82;
@@ -28,7 +28,6 @@ export function stepPhysics(game, elapsedSeconds) {
 
 function resolveCollisions(game) {
   const pieces = livingPieces(game);
-  const diameter = BOARD.radius * 2;
   for (let index = 0; index < pieces.length; index += 1) {
     const first = pieces[index];
     for (let otherIndex = index + 1; otherIndex < pieces.length; otherIndex += 1) {
@@ -36,6 +35,9 @@ function resolveCollisions(game) {
       let dx = second.x - first.x;
       let dy = second.y - first.y;
       let distance = Math.hypot(dx, dy);
+      const firstRadius = pieceRadius(first);
+      const secondRadius = pieceRadius(second);
+      const diameter = firstRadius + secondRadius;
       if (distance >= diameter) continue;
 
       if (distance < 0.001) {
@@ -46,27 +48,31 @@ function resolveCollisions(game) {
       const nx = dx / distance;
       const ny = dy / distance;
       const overlap = diameter - distance;
-      first.x -= nx * overlap * 0.5;
-      first.y -= ny * overlap * 0.5;
-      second.x += nx * overlap * 0.5;
-      second.y += ny * overlap * 0.5;
+      const firstInverseMass = 1 / pieceMass(first);
+      const secondInverseMass = 1 / pieceMass(second);
+      const inverseMassSum = firstInverseMass + secondInverseMass;
+      const correction = Math.max(0, overlap - 0.01) / inverseMassSum;
+      first.x -= nx * correction * firstInverseMass;
+      first.y -= ny * correction * firstInverseMass;
+      second.x += nx * correction * secondInverseMass;
+      second.y += ny * correction * secondInverseMass;
 
       const relativeNormalSpeed = (second.vx - first.vx) * nx + (second.vy - first.vy) * ny;
       if (relativeNormalSpeed >= 0) continue;
-      const impulse = -(1 + RESTITUTION) * relativeNormalSpeed * 0.5;
-      first.vx -= impulse * nx;
-      first.vy -= impulse * ny;
-      second.vx += impulse * nx;
-      second.vy += impulse * ny;
+      const impulse = -(1 + RESTITUTION) * relativeNormalSpeed / inverseMassSum;
+      first.vx -= impulse * firstInverseMass * nx;
+      first.vy -= impulse * firstInverseMass * ny;
+      second.vx += impulse * secondInverseMass * nx;
+      second.vy += impulse * secondInverseMass * ny;
     }
   }
 }
 
 function removePiecesOutsideBoard(game) {
-  const radius = BOARD.radius;
   for (const piece of game.pieces) {
     if (!piece.alive) continue;
-    if (piece.x < BOARD.left + radius || piece.x > BOARD.right - radius || piece.y < BOARD.top + radius || piece.y > BOARD.bottom - radius) {
+    const pieceEdge = pieceRadius(piece);
+    if (piece.x < BOARD.left + pieceEdge || piece.x > BOARD.right - pieceEdge || piece.y < BOARD.top + pieceEdge || piece.y > BOARD.bottom - pieceEdge) {
       piece.alive = false;
       piece.vx = piece.vy = 0;
     }
