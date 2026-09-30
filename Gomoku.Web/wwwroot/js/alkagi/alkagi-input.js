@@ -1,4 +1,4 @@
-import { BOARD, beginAim, releaseAim, updateAim, livingPieces } from "./alkagi-state.js";
+import { BOARD, beginAim, beginPlacement, endPlacement, pieceRadius, releaseAim, updateAim, updatePlacement, livingPieces } from "./alkagi-state.js";
 
 export function attachInput(canvas, game, onShot) {
   const toBoardPoint = (event) => {
@@ -9,29 +9,42 @@ export function attachInput(canvas, game, onShot) {
   const onPointerDown = (event) => {
     if (game.isMoving || game.result) return;
     const point = toBoardPoint(event);
-    const piece = livingPieces(game, game.currentPlayer)
+    const activePlayer = game.phase === "setup" ? game.setupPlayer : game.currentPlayer;
+    const piece = livingPieces(game, activePlayer)
       .slice().reverse()
-      .find((item) => Math.hypot(item.x - point.x, item.y - point.y) <= BOARD.radius + 8);
-    if (!piece || !beginAim(game, piece, point)) return;
+      .find((item) => Math.hypot(item.x - point.x, item.y - point.y) <= pieceRadius(item) + 10);
+    if (!piece) return;
+    const started = game.phase === "setup" ? beginPlacement(game, piece) : beginAim(game, piece, point);
+    if (!started) return;
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event) => {
-    if (!game.isAiming) return;
-    updateAim(game, toBoardPoint(event));
+    const point = toBoardPoint(event);
+    if (game.isPlacing) updatePlacement(game, point);
+    else if (game.isAiming) updateAim(game, point);
   };
 
   const onPointerUp = (event) => {
-    if (!game.isAiming) return;
-    updateAim(game, toBoardPoint(event));
-    if (releaseAim(game)) onShot();
+    if (game.isPlacing) {
+      endPlacement(game);
+      onShot();
+    } else if (game.isAiming) {
+      updateAim(game, toBoardPoint(event));
+      if (releaseAim(game)) onShot();
+    }
   };
 
   const onPointerCancel = () => {
-    if (!game.isAiming) return;
-    game.isAiming = false;
-    game.aim = null;
+    if (game.isPlacing) {
+      endPlacement(game);
+      onShot();
+    }
+    if (game.isAiming) {
+      game.isAiming = false;
+      game.aim = null;
+    }
   };
 
   canvas.addEventListener("pointerdown", onPointerDown);
