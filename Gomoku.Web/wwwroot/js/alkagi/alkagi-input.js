@@ -1,6 +1,6 @@
 import { BOARD, beginAim, beginPlacement, endPlacement, pieceRadius, releaseAim, updateAim, updatePlacement, livingPieces } from "./alkagi-state.js";
 
-export function attachInput(canvas, game, onShot) {
+export function attachInput(canvas, game, requestFrame, onStateChange) {
   const toBoardPoint = (event) => {
     const rect = canvas.getBoundingClientRect();
     return { x: ((event.clientX - rect.left) / rect.width) * BOARD.width, y: ((event.clientY - rect.top) / rect.height) * BOARD.height };
@@ -18,28 +18,35 @@ export function attachInput(canvas, game, onShot) {
     if (!started) return;
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
+    requestFrame();
   };
 
   const onPointerMove = (event) => {
+    if (!game.isPlacing && !game.isAiming) return;
     const point = toBoardPoint(event);
     if (game.isPlacing) updatePlacement(game, point);
     else if (game.isAiming) updateAim(game, point);
+    requestFrame();
   };
 
   const onPointerUp = (event) => {
     if (game.isPlacing) {
       endPlacement(game);
-      onShot();
+      requestFrame();
+      onStateChange();
     } else if (game.isAiming) {
       updateAim(game, toBoardPoint(event));
-      if (releaseAim(game)) onShot();
+      releaseAim(game);
+      requestFrame();
+      onStateChange();
     }
   };
 
   const onPointerCancel = () => {
     if (game.isPlacing) {
       endPlacement(game);
-      onShot();
+      requestFrame();
+      onStateChange();
     }
     if (game.isAiming) {
       game.isAiming = false;
