@@ -8,14 +8,14 @@ const colors = {
 
 export function renderGame(context, game) {
   context.clearRect(0, 0, BOARD.width, BOARD.height);
+  context.fillStyle = "#fffdf7";
+  context.fillRect(0, 0, BOARD.width, BOARD.height);
   context.save();
   if (game.screenShake) {
     const progress = Math.max(0, 1 - game.screenShake.elapsed / game.screenShake.duration);
     const intensity = game.screenShake.intensity * progress;
     context.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
   }
-  context.fillStyle = "#fffdf7";
-  context.fillRect(0, 0, BOARD.width, BOARD.height);
   drawPaperMarks(context);
   drawSketchBorder(context);
   drawSetupGuide(context, game);
@@ -37,7 +37,7 @@ function drawFallingPiece(context, falling) {
   context.translate(piece.x + dx * progress * 34, piece.y + dy * progress * 34);
   context.rotate(progress * (dx === 0 ? 0.35 : 0.55) * (piece.player === 1 ? 1 : -1));
   context.scale(1 + Math.sin(progress * Math.PI) * 0.14, Math.max(0.08, 1 - progress * 0.72));
-  drawPiece(context, piece, radius, false);
+  drawPiece(context, piece, radius, false, 0, 0);
   context.restore();
 }
 
@@ -118,26 +118,26 @@ function drawSketchBorder(context) {
   context.globalAlpha = 1;
 }
 
-function drawPiece(context, piece, radius, selected) {
+function drawPiece(context, piece, radius, selected, x = piece.x, y = piece.y) {
   const color = colors[piece.player];
   context.save();
   context.shadowColor = "#26231f3d";
   context.shadowBlur = 5;
   context.shadowOffsetX = 2;
   context.shadowOffsetY = 3;
-  const gradient = context.createRadialGradient(piece.x - 8, piece.y - 9, 3, piece.x, piece.y, radius);
+  const gradient = context.createRadialGradient(x - 8, y - 9, 3, x, y, radius);
   gradient.addColorStop(0, color.light);
   gradient.addColorStop(0.67, color.mid);
   gradient.addColorStop(1, color.dark);
   context.beginPath();
-  context.arc(piece.x, piece.y, radius, 0, Math.PI * 2);
+  context.arc(x, y, radius, 0, Math.PI * 2);
   context.fillStyle = gradient;
   context.fill();
   context.restore();
 
   for (let line = 0; line < 2; line += 1) {
     context.beginPath();
-    context.ellipse(piece.x + (line ? 1 : -1), piece.y, radius - line * 2, radius - line * 2 + (line ? 1 : -1), (line ? -1 : 1) * 0.06, 0.15, Math.PI * 1.85);
+    context.ellipse(x + (line ? 1 : -1), y, radius - line * 2, radius - line * 2 + (line ? 1 : -1), (line ? -1 : 1) * 0.06, 0.15, Math.PI * 1.85);
     context.strokeStyle = line ? "#fff9" : color.mark;
     context.lineWidth = line ? 1 : 1.3;
     context.globalAlpha = line ? 0.72 : 0.48;
@@ -147,20 +147,20 @@ function drawPiece(context, piece, radius, selected) {
 
   if (selected) {
     context.beginPath();
-    context.arc(piece.x, piece.y, radius + 5, 0, Math.PI * 2);
+    context.arc(x, y, radius + 5, 0, Math.PI * 2);
     context.setLineDash([3, 4]);
     context.strokeStyle = color.dark;
     context.lineWidth = 2;
     context.stroke();
     context.setLineDash([]);
   }
-  if (piece.captain) drawCaptainMark(context, piece, radius);
+  if (piece.captain) drawCaptainMark(context, piece, radius, x, y);
   context.restore();
 }
 
-function drawCaptainMark(context, piece, radius) {
-  const x = piece.x;
-  const y = piece.y - radius * 0.08;
+function drawCaptainMark(context, piece, radius, pieceX = piece.x, pieceY = piece.y) {
+  const x = pieceX;
+  const y = pieceY - radius * 0.08;
   const scale = radius / 33;
   context.save();
   context.translate(x, y);
