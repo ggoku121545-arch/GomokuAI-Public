@@ -42,6 +42,9 @@
 .alkagi-board-frame::after { inset: 0 1px -1px -1px; border-width: 1px; opacity: .55; transform: rotate(-.28deg); }
 .alkagi-board { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; border-radius: 20px 16px 22px 17px; touch-action: none; user-select: none; -webkit-user-select: none; }
 .alkagi-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.alkagi-setup-actions { grid-column: 1 / -1; display: grid; gap: 8px; }
+.alkagi-setup-actions > span { color: var(--alkagi-muted); font-size: .92rem; text-align: center; }
+.alkagi-button.setup-complete { width: 100%; border-color: #56524b; background: #f1eee4; }
 .alkagi-button { min-height: 49px; padding: 7px 14px; border: 2px solid #45433e; border-radius: 14px 11px 15px 12px; background: #fffdf5bf; color: var(--alkagi-ink); box-shadow: 2px 3px 0 #39352c20; font: 700 1.04rem "Gaegu Local", "Comic Sans MS", cursive, sans-serif; cursor: pointer; }
 .alkagi-button:active { transform: translate(1px, 2px); box-shadow: 1px 1px 0 #39352c20; }
 .alkagi-button:focus-visible, .alkagi-back:focus-visible, .modal-exit:focus-visible { outline: 3px solid #2d68b2; outline-offset: 3px; }

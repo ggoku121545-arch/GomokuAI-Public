@@ -7,12 +7,23 @@ export const BOARD = Object.freeze({
   bottom: 558,
   radius: 25,
   maxPull: 132,
+  setupDivider: 300,
 });
+
+export function pieceRadius(piece) {
+  return piece.captain ? 33 : BOARD.radius;
+}
+
+export function pieceMass(piece) {
+  return piece.captain ? 3.5 : 1;
+}
 
 export function createGame(player1Name, player2Name) {
   const game = {
     players: [player1Name || "플레이어 1", player2Name || "플레이어 2"],
     currentPlayer: 1,
+    phase: "setup",
+    setupPlayer: 1,
     pieces: [],
     aim: null,
     isAiming: false,
@@ -28,9 +39,13 @@ export function createGame(player1Name, player2Name) {
 
 export function resetGame(game) {
   game.currentPlayer = 1;
+  game.phase = "setup";
+  game.setupPlayer = 1;
   game.pieces = [];
   game.aim = null;
   game.isAiming = false;
+  game.isPlacing = false;
+  game.placementPieceId = null;
   game.isMoving = false;
   game.shotInProgress = false;
   game.turnsPlayed = 0;
@@ -43,24 +58,75 @@ export function resetGame(game) {
     2: [404, 462],
   };
   for (const player of [1, 2]) {
+    let captainAssigned = false;
     for (const y of rows[player]) {
       for (const x of columns) {
         game.pieces.push({
           id: `${player}-${game.pieces.length}`,
           player,
+          captain: !captainAssigned,
           x: x + (y === rows[player][1] ? 7 : -6),
           y,
           vx: 0,
           vy: 0,
           alive: true,
         });
+        captainAssigned = true;
       }
     }
   }
 }
 
+export function completeSetup(game) {
+  if (game.phase !== "setup" || game.isMoving || game.isPlacing) return false;
+  if (game.setupPlayer === 1) {
+    game.setupPlayer = 2;
+  } else {
+    game.phase = "playing";
+    game.currentPlayer = 1;
+  }
+  return true;
+}
+
+export function beginPlacement(game, piece) {
+  if (game.phase !== "setup" || game.isPlacing || !piece?.alive || piece.player !== game.setupPlayer) return false;
+  game.isPlacing = true;
+  game.placementPieceId = piece.id;
+  return true;
+}
+
+export function updatePlacement(game, point) {
+  if (game.phase !== "setup" || !game.isPlacing) return false;
+  const piece = game.pieces.find((item) => item.id === game.placementPieceId && item.alive);
+  if (!piece) return false;
+
+  const radius = pieceRadius(piece);
+  const minY = piece.player === 1 ? BOARD.top + radius : BOARD.setupDivider + radius;
+  const maxY = piece.player === 1 ? BOARD.setupDivider - radius : BOARD.bottom - radius;
+  const next = {
+    x: Math.max(BOARD.left + radius, Math.min(BOARD.right - radius, point.x)),
+    y: Math.max(minY, Math.min(maxY, point.y)),
+  };
+
+  const wouldOverlap = game.pieces.some((other) => {
+    if (other.id === piece.id || !other.alive) return false;
+    return Math.hypot(other.x - next.x, other.y - next.y) < radius + pieceRadius(other) + 2;
+  });
+  if (wouldOverlap) return false;
+
+  piece.x = next.x;
+  piece.y = next.y;
+  return true;
+}
+
+export function endPlacement(game) {
+  if (!game.isPlacing) return;
+  game.isPlacing = false;
+  game.placementPieceId = null;
+}
+
 export function beginAim(game, piece, point) {
-  if (game.result || game.isMoving || game.isAiming || !piece?.alive || piece.player !== game.currentPlayer) return false;
+  if (game.phase !== "playing" || game.result || game.isMoving || game.isAiming || !piece?.alive || piece.player !== game.currentPlayer) return false;
   game.isAiming = true;
   game.aim = { pieceId: piece.id, originX: piece.x, originY: piece.y, pointerX: point.x, pointerY: point.y, pullX: 0, pullY: 0, power: 0 };
   updateAim(game, point);
@@ -134,6 +200,8 @@ export function finishTurn(game) {
 export function snapshot(game) {
   return {
     currentPlayer: game.currentPlayer,
+    phase: game.phase,
+    setupPlayer: game.setupPlayer,
     player1Remaining: livingPieces(game, 1).length,
     player2Remaining: livingPieces(game, 2).length,
     isMoving: game.isMoving,

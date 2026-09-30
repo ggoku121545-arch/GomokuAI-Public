@@ -1,4 +1,4 @@
-import { BOARD, createGame, resetGame, finishTurn, snapshot } from "./alkagi-state.js";
+import { BOARD, completeSetup as completeSetupState, createGame, resetGame, finishTurn, snapshot } from "./alkagi-state.js";
 import { stepPhysics } from "./alkagi-physics.js";
 import { renderGame } from "./alkagi-renderer.js";
 import { attachInput } from "./alkagi-input.js";
@@ -33,6 +33,11 @@ export function restart() {
   if (!game) return;
   resetGame(game);
   sentFinalResult = false;
+  notifyState();
+}
+
+export function completeSetup() {
+  if (!game || !completeSetupState(game)) return;
   notifyState();
 }
 
