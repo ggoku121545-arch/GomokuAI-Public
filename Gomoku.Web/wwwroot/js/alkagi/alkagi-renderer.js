@@ -20,6 +20,7 @@ export function renderGame(context, game) {
   drawGoGrid(context);
   drawSketchBorder(context);
   drawSetupGuide(context, game);
+  drawHinge(context);
   drawAim(context, game);
   for (const piece of livingPieces(game)) {
     drawPiece(context, piece, pieceRadius(piece), (game.isAiming && game.aim?.pieceId === piece.id) || (game.isPlacing && game.placementPieceId === piece.id));
@@ -78,6 +79,72 @@ function drawSetupGuide(context, game) {
   context.font = "bold 19px 'Gaegu Local', sans-serif";
   context.fillStyle = ink;
   context.fillText(top ? "플레이어 1 배치" : "플레이어 2 배치", BOARD.width / 2, top ? BOARD.top + 30 : BOARD.bottom - 18);
+  context.restore();
+}
+
+function drawHinge(context) {
+  const { x, y, halfLength } = BOARD.hinge;
+  const plateWidth = halfLength * 2 + 28;
+  context.save();
+  context.translate(x, y);
+  context.rotate(-0.012);
+
+  context.beginPath();
+  context.roundRect(-plateWidth / 2, -21, plateWidth, 42, 7);
+  context.fillStyle = "#d4cbb8";
+  context.fill();
+  context.strokeStyle = "#57534b";
+  context.lineWidth = 2;
+  context.stroke();
+
+  context.beginPath();
+  context.roundRect(-halfLength + 1, -15, halfLength - 4, 30, 5);
+  context.roundRect(3, -15, halfLength - 4, 30, 5);
+  context.fillStyle = "#c9c1b1";
+  context.fill();
+  context.strokeStyle = "#777064";
+  context.lineWidth = 1.3;
+  context.stroke();
+
+  context.lineCap = "round";
+  context.beginPath();
+  context.moveTo(-halfLength, 0);
+  context.lineTo(halfLength, 0);
+  context.strokeStyle = "#777064";
+  context.lineWidth = BOARD.hinge.radius * 2;
+  context.stroke();
+  context.beginPath();
+  context.moveTo(-halfLength + 2, -3);
+  context.lineTo(halfLength - 2, -3);
+  context.strokeStyle = "#e8e2d5";
+  context.globalAlpha = 0.8;
+  context.lineWidth = 2;
+  context.stroke();
+  context.globalAlpha = 1;
+
+  for (const [screwX, screwY] of [
+    [-halfLength + 9, -11], [-halfLength + 9, 11],
+    [halfLength - 9, -11], [halfLength - 9, 11],
+  ]) {
+    context.beginPath();
+    context.arc(screwX, screwY, 3, 0, Math.PI * 2);
+    context.fillStyle = "#625d53";
+    context.fill();
+    context.beginPath();
+    context.moveTo(screwX - 1.5, screwY);
+    context.lineTo(screwX + 1.5, screwY);
+    context.strokeStyle = "#e5dfd2";
+    context.lineWidth = 0.8;
+    context.stroke();
+  }
+
+  context.beginPath();
+  context.arc(0, 0, 4, 0, Math.PI * 2);
+  context.fillStyle = "#aaa18f";
+  context.fill();
+  context.strokeStyle = "#514c43";
+  context.lineWidth = 1;
+  context.stroke();
   context.restore();
 }
 

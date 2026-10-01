@@ -21,6 +21,7 @@ export function stepPhysics(game, elapsedSeconds) {
     }
 
     resolveCollisions(game);
+    resolveHingeCollisions(game);
     removePiecesOutsideBoard(game);
   }
 
@@ -84,6 +85,49 @@ function resolveCollisions(game) {
       playAlkagiCollision(impulse);
       registerImpact(game, first, second, impulse, (first.x + second.x) / 2, (first.y + second.y) / 2);
     }
+  }
+}
+
+export function resolveHingeCollisions(game) {
+  const hinge = BOARD.hinge;
+  const hingeStartX = hinge.x - hinge.halfLength;
+  const hingeEndX = hinge.x + hinge.halfLength;
+
+  for (const piece of livingPieces(game)) {
+    const closestX = Math.max(hingeStartX, Math.min(hingeEndX, piece.x));
+    let dx = piece.x - closestX;
+    let dy = piece.y - hinge.y;
+    let distance = Math.hypot(dx, dy);
+    const minimumDistance = pieceRadius(piece) + hinge.radius;
+    if (distance >= minimumDistance) continue;
+
+    if (distance < 0.001) {
+      const speed = Math.hypot(piece.vx, piece.vy);
+      if (speed > 0.001) {
+        dx = -piece.vx / speed;
+        dy = -piece.vy / speed;
+      } else {
+        dx = 0;
+        dy = piece.y <= hinge.y ? -1 : 1;
+      }
+      distance = 1;
+    }
+
+    const nx = dx / distance;
+    const ny = dy / distance;
+    const overlap = minimumDistance - distance;
+    piece.x += nx * (overlap + 0.01);
+    piece.y += ny * (overlap + 0.01);
+
+    const normalSpeed = piece.vx * nx + piece.vy * ny;
+    if (normalSpeed >= 0) continue;
+
+    const inverseMass = 1 / pieceMass(piece);
+    const impulse = -(1 + RESTITUTION) * normalSpeed / inverseMass;
+    piece.vx += impulse * inverseMass * nx;
+    piece.vy += impulse * inverseMass * ny;
+    playAlkagiCollision(impulse);
+    registerImpact(game, piece, { id: "fixed-hinge" }, impulse, closestX, hinge.y);
   }
 }
 
