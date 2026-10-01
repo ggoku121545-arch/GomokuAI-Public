@@ -1,13 +1,13 @@
 export const BOARD = Object.freeze({
   width: 1000,
-  height: 600,
-  left: 42,
-  right: 958,
-  top: 42,
-  bottom: 558,
+  height: 1000,
+  left: 50,
+  right: 950,
+  top: 50,
+  bottom: 950,
   radius: 25,
   maxPull: 180,
-  setupDivider: 300,
+  setupDivider: 500,
 });
 
 export function pieceRadius(piece) {
@@ -60,10 +60,10 @@ export function resetGame(game) {
   game.impactCooldowns = new Map();
   game.screenShake = null;
 
-  const columns = [365, 500, 635];
+  const columns = [350, 500, 650];
   const rows = {
-    1: [138, 196],
-    2: [404, 462],
+    1: [200, 300],
+    2: [700, 800],
   };
   for (const player of [1, 2]) {
     let captainAssigned = false;
@@ -73,7 +73,7 @@ export function resetGame(game) {
           id: `${player}-${game.pieces.length}`,
           player,
           captain: !captainAssigned,
-          x: x + (y === rows[player][1] ? 7 : -6),
+          x,
           y,
           vx: 0,
           vy: 0,

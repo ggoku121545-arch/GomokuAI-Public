@@ -37,10 +37,10 @@
 .score-divider { color: #77736d; font: 800 .68rem system-ui, sans-serif; }
 .alkagi-instruction { min-height: 1.4em; margin: 14px 0 9px; color: #56534e; font-size: 1rem; text-align: center; }
 
-.alkagi-board-frame { position: relative; width: 100%; isolation: isolate; }
+.alkagi-board-frame { position: relative; width: calc(100% + 16px); max-width: min(calc(100% + 16px), 68dvh); margin-inline: -8px; isolation: isolate; align-self: center; }
 .alkagi-board-frame::before, .alkagi-board-frame::after { content: ""; position: absolute; z-index: -1; inset: 2px -2px -3px 1px; border: 2px solid #4b4944; border-radius: 22px 18px 25px 17px; transform: rotate(.35deg); }
 .alkagi-board-frame::after { inset: 0 1px -1px -1px; border-width: 1px; opacity: .55; transform: rotate(-.28deg); }
-.alkagi-board { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; border-radius: 20px 16px 22px 17px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.alkagi-board { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 20px 16px 22px 17px; touch-action: none; user-select: none; -webkit-user-select: none; }
 .alkagi-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .alkagi-setup-actions { grid-column: 1 / -1; display: grid; gap: 8px; }
 .alkagi-setup-actions > span { color: var(--alkagi-muted); font-size: .92rem; text-align: center; }

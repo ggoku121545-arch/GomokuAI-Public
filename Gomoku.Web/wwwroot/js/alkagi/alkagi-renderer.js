@@ -8,7 +8,7 @@ const colors = {
 
 export function renderGame(context, game) {
   context.clearRect(0, 0, BOARD.width, BOARD.height);
-  context.fillStyle = "#fffdf7";
+  context.fillStyle = "#ead7ad";
   context.fillRect(0, 0, BOARD.width, BOARD.height);
   context.save();
   if (game.screenShake) {
@@ -17,6 +17,7 @@ export function renderGame(context, game) {
     context.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
   }
   drawPaperMarks(context);
+  drawGoGrid(context);
   drawSketchBorder(context);
   drawSetupGuide(context, game);
   drawAim(context, game);
@@ -82,15 +83,51 @@ function drawSetupGuide(context, game) {
 
 function drawPaperMarks(context) {
   context.save();
-  context.strokeStyle = "#c8c2b8";
-  context.globalAlpha = 0.22;
+  context.strokeStyle = "#ad8956";
+  context.globalAlpha = 0.18;
   context.lineWidth = 1;
-  for (let i = 0; i < 11; i += 1) {
-    const x = 74 + i * 83;
+  for (let i = 0; i < 15; i += 1) {
+    const x = BOARD.left + 18 + i * 61;
+    const y = BOARD.top + 15 + (i % 5) * 5;
     context.beginPath();
-    context.moveTo(x, 58 + (i % 3) * 5);
-    context.lineTo(x - 8, 68 + (i % 3) * 5);
+    context.moveTo(x, y);
+    context.quadraticCurveTo(x + 24, y - 3, x + 49, y + 1);
     context.stroke();
+  }
+  context.restore();
+}
+
+function drawGoGrid(context) {
+  const intervals = 18;
+  const spacing = (BOARD.right - BOARD.left) / intervals;
+  context.save();
+  context.strokeStyle = "#443a2d";
+  context.globalAlpha = 0.82;
+  context.lineWidth = 1.6;
+
+  for (let index = 0; index <= intervals; index += 1) {
+    const coordinate = BOARD.left + index * spacing;
+    const wobble = ((index % 3) - 1) * 0.45;
+
+    context.beginPath();
+    context.moveTo(coordinate + wobble, BOARD.top);
+    context.lineTo(coordinate - wobble, BOARD.bottom);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(BOARD.left, coordinate - wobble);
+    context.lineTo(BOARD.right, coordinate + wobble);
+    context.stroke();
+  }
+
+  context.globalAlpha = 0.88;
+  context.fillStyle = "#40372b";
+  for (const column of [3, 9, 15]) {
+    for (const row of [3, 9, 15]) {
+      context.beginPath();
+      context.arc(BOARD.left + column * spacing, BOARD.top + row * spacing, 4, 0, Math.PI * 2);
+      context.fill();
+    }
   }
   context.restore();
 }
@@ -224,7 +261,7 @@ function drawPowerMeter(context, game) {
   if (!game.isAiming || !game.aim) return;
   const width = 190;
   const x = (BOARD.width - width) / 2;
-  const y = 575;
+  const y = 982;
   context.save();
   context.font = "bold 18px 'Gaegu Local', sans-serif";
   context.fillStyle = ink;
