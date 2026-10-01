@@ -8,7 +8,10 @@ export const BOARD = Object.freeze({
   radius: 25,
   maxPull: 180,
   setupDivider: 500,
-  hinge: Object.freeze({ x: 500, y: 500, halfLength: 42, radius: 11 }),
+  hinges: Object.freeze([
+    Object.freeze({ id: "left", x: 350, y: 500, halfLength: 42, radius: 11 }),
+    Object.freeze({ id: "right", x: 650, y: 500, halfLength: 42, radius: 11 }),
+  ]),
 });
 
 export function pieceRadius(piece) {
@@ -121,9 +124,10 @@ export function updatePlacement(game, point) {
     if (other.id === piece.id || !other.alive) return false;
     return Math.hypot(other.x - next.x, other.y - next.y) < radius + pieceRadius(other) + 2;
   });
-  const hinge = BOARD.hinge;
-  const hingeNearestX = Math.max(hinge.x - hinge.halfLength, Math.min(hinge.x + hinge.halfLength, next.x));
-  const overlapsHinge = Math.hypot(next.x - hingeNearestX, next.y - hinge.y) < radius + hinge.radius + 2;
+  const overlapsHinge = BOARD.hinges.some((hinge) => {
+    const hingeNearestX = Math.max(hinge.x - hinge.halfLength, Math.min(hinge.x + hinge.halfLength, next.x));
+    return Math.hypot(next.x - hingeNearestX, next.y - hinge.y) < radius + hinge.radius + 2;
+  });
   if (wouldOverlap || overlapsHinge) return false;
 
   piece.x = next.x;
