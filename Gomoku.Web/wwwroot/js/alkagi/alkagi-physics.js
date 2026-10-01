@@ -1,4 +1,5 @@
 import { BOARD, livingPieces, pieceMass, pieceRadius } from "./alkagi-state.js";
+import { playAlkagiCollision } from "../game-audio.js";
 
 const FRICTION = 3.45;
 const RESTITUTION = 0.91;
@@ -80,6 +81,7 @@ function resolveCollisions(game) {
       first.vy -= impulse * firstInverseMass * ny;
       second.vx += impulse * secondInverseMass * nx;
       second.vy += impulse * secondInverseMass * ny;
+      playAlkagiCollision(impulse);
       registerImpact(game, first, second, impulse, (first.x + second.x) / 2, (first.y + second.y) / 2);
     }
   }

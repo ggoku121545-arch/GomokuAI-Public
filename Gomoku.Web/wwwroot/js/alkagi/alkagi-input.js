@@ -1,4 +1,5 @@
 import { BOARD, beginAim, beginPlacement, endPlacement, pieceRadius, releaseAim, updateAim, updatePlacement, livingPieces } from "./alkagi-state.js";
+import { playAlkagiLaunch } from "../game-audio.js";
 
 export function attachInput(canvas, game, requestFrame, onStateChange) {
   const toBoardPoint = (event) => {
@@ -36,7 +37,8 @@ export function attachInput(canvas, game, requestFrame, onStateChange) {
       onStateChange();
     } else if (game.isAiming) {
       updateAim(game, toBoardPoint(event));
-      releaseAim(game);
+      const launchPower = game.aim?.power ?? 0;
+      if (releaseAim(game)) playAlkagiLaunch(launchPower);
       requestFrame();
       onStateChange();
     }

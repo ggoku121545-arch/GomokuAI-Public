@@ -22,12 +22,12 @@
     <section class="alkagi-score" aria-label="플레이어와 남은 돌">
         <div class="alkagi-player player-one @(IsPlayerOneActive ? "active" : null)">
             <span class="player-stone" aria-hidden="true"></span>
-            <div><strong>@player1Name</strong><span>빨강 · @(player1Remaining)개</span></div>
+            <div><strong>@player1Name</strong><span>흑돌 · @(player1Remaining)개</span></div>
         </div>
         <span class="score-divider" aria-hidden="true">VS</span>
         <div class="alkagi-player player-two @(IsPlayerTwoActive ? "active" : null)">
             <span class="player-stone" aria-hidden="true"></span>
-            <div><strong>@player2Name</strong><span>파랑 · @(player2Remaining)개</span></div>
+            <div><strong>@player2Name</strong><span>백돌 · @(player2Remaining)개</span></div>
         </div>
     </section>
 
