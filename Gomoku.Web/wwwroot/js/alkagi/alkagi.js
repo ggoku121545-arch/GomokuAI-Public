@@ -2,6 +2,7 @@ import { BOARD, completeSetup as completeSetupState, createGame, resetGame, fini
 import { stepPhysics } from "./alkagi-physics.js";
 import { renderGame } from "./alkagi-renderer.js";
 import { attachInput } from "./alkagi-input.js";
+import { bindUnlock, unbindUnlock } from "../game-audio.js";
 
 let canvas;
 let context;
@@ -19,6 +20,7 @@ export function start(boardCanvas, dotNetReference, player1Name, player2Name) {
   context = canvas.getContext("2d", { alpha: false });
   dotNet = dotNetReference;
   game = createGame(player1Name, player2Name);
+  bindUnlock(canvas);
   sentFinalResult = false;
   resizeCanvas();
   disposeInput = attachInput(canvas, game, requestFrame, notifyState);
@@ -49,6 +51,7 @@ export function stop() {
   animationFrame = 0;
   disposeInput?.();
   disposeInput = null;
+  unbindUnlock(canvas);
   resizeObserver?.disconnect();
   resizeObserver = null;
   if (canvas && context) context.clearRect(0, 0, canvas.width, canvas.height);

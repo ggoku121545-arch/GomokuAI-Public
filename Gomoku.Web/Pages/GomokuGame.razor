@@ -1,9 +1,11 @@
 @page "/game/gomoku"
+@implements IAsyncDisposable
 @inject Microsoft.AspNetCore.Components.NavigationManager Navigation
 @inject PlayerStatsStore StatsStore
+@inject Microsoft.JSInterop.IJSRuntime JS
 
 <PageTitle>오목 한판</PageTitle>
-<main class="game-shell">
+<main class="game-shell" @ref="gameRoot">
     <header class="game-header">
         <button type="button" class="home-button" aria-label="홈으로 돌아가기" @onclick="GoHome">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -65,8 +67,24 @@
     private readonly Game game = new();
     private readonly GomokuAi ai = new();
     private BoardTheme selectedTheme = BoardThemes.Default;
+    private ElementReference gameRoot;
+    private Microsoft.JSInterop.IJSObjectReference? audioModule;
     private bool thinking;
     private bool resultRecorded;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            audioModule = await JS.InvokeAsync<Microsoft.JSInterop.IJSObjectReference>("import", "./js/game-audio.js");
+            await audioModule.InvokeVoidAsync("bindUnlock", gameRoot);
+        }
+        catch (Microsoft.JSInterop.JSException)
+        {
+            audioModule = null;
+        }
+    }
 
     private string Status => game.Result switch
     {
@@ -84,6 +102,7 @@
     private async Task HumanMove(Position position)
     {
         if (thinking || game.CurrentTurn != Stone.Black || !game.TryPlay(position)) return;
+        await PlayGomokuPlaceAsync();
 
         if (game.Result != GameResult.Playing)
         {
@@ -97,7 +116,7 @@
         {
             await Task.Delay(180);
             var move = ai.ChooseMove(game);
-            if (move is not null) game.TryPlay(move.Value);
+            if (move is not null && game.TryPlay(move.Value)) await PlayGomokuPlaceAsync();
         }
         finally
         {
@@ -126,4 +145,18 @@
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
     private void NewGame() { game.Reset(); thinking = false; resultRecorded = false; }
     private void Undo() { if (!thinking && game.Result == GameResult.Playing) game.UndoRound(); }
+
+    private async Task PlayGomokuPlaceAsync()
+    {
+        if (audioModule is null) return;
+        try { await audioModule.InvokeVoidAsync("playGomokuPlace"); }
+        catch (Microsoft.JSInterop.JSException) { }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (audioModule is null) return;
+        try { await audioModule.InvokeVoidAsync("unbindUnlock", gameRoot); await audioModule.DisposeAsync(); }
+        catch (Microsoft.JSInterop.JSDisconnectedException) { }
+    }
 }

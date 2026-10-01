@@ -2,8 +2,8 @@ import { BOARD, livingPieces, pieceRadius } from "./alkagi-state.js";
 
 const ink = "#47443f";
 const colors = {
-  1: { light: "#ffd4c7", mid: "#cf554b", dark: "#8e302d", mark: "#a6423c" },
-  2: { light: "#d9efff", mid: "#5a91c7", dark: "#31577f", mark: "#4678a8" },
+  1: { light: "#62615e", mid: "#181817", dark: "#040404", mark: "#f4f0e7", edge: "#050505" },
+  2: { light: "#fff", mid: "#f4f1e9", dark: "#cbc5ba", mark: "#746e64", edge: "#4c4943" },
 };
 
 export function renderGame(context, game) {
@@ -60,7 +60,7 @@ function drawSetupGuide(context, game) {
   if (game.phase !== "setup") return;
   const top = game.setupPlayer === 1;
   context.save();
-  context.fillStyle = top ? "#c7534b" : "#4b82bd";
+  context.fillStyle = top ? "#232220" : "#dedbd3";
   context.globalAlpha = 0.055;
   context.fillRect(BOARD.left + 3, top ? BOARD.top + 3 : BOARD.setupDivider, BOARD.right - BOARD.left - 6, BOARD.setupDivider - BOARD.top - 3);
   context.globalAlpha = 0.28;
@@ -75,7 +75,7 @@ function drawSetupGuide(context, game) {
   context.globalAlpha = 0.62;
   context.textAlign = "center";
   context.font = "bold 19px 'Gaegu Local', sans-serif";
-  context.fillStyle = top ? "#8e302d" : "#31577f";
+  context.fillStyle = ink;
   context.fillText(top ? "플레이어 1 배치" : "플레이어 2 배치", BOARD.width / 2, top ? BOARD.top + 30 : BOARD.bottom - 18);
   context.restore();
 }
@@ -133,6 +133,10 @@ function drawPiece(context, piece, radius, selected, x = piece.x, y = piece.y) {
   context.arc(x, y, radius, 0, Math.PI * 2);
   context.fillStyle = gradient;
   context.fill();
+  context.shadowColor = "transparent";
+  context.lineWidth = Math.max(1.5, radius * 0.055);
+  context.strokeStyle = color.edge;
+  context.stroke();
   context.restore();
 
   for (let line = 0; line < 2; line += 1) {
@@ -174,8 +178,8 @@ function drawCaptainMark(context, piece, radius, pieceX = piece.x, pieceY = piec
   context.lineTo(10, -8);
   context.lineTo(12, 2);
   context.closePath();
-  context.fillStyle = "#f0c45e";
-  context.strokeStyle = "#4e4636";
+  context.fillStyle = piece.player === 1 ? "#f2eee4" : "#292723";
+  context.strokeStyle = piece.player === 1 ? "#292723" : "#f2eee4";
   context.lineWidth = 1.8;
   context.fill();
   context.stroke();
