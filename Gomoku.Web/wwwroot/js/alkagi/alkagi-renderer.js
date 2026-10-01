@@ -20,7 +20,7 @@ export function renderGame(context, game) {
   drawGoGrid(context);
   drawSketchBorder(context);
   drawSetupGuide(context, game);
-  drawHinge(context);
+  for (const hinge of BOARD.hinges) drawHinge(context, hinge);
   drawAim(context, game);
   for (const piece of livingPieces(game)) {
     drawPiece(context, piece, pieceRadius(piece), (game.isAiming && game.aim?.pieceId === piece.id) || (game.isPlacing && game.placementPieceId === piece.id));
@@ -82,8 +82,8 @@ function drawSetupGuide(context, game) {
   context.restore();
 }
 
-function drawHinge(context) {
-  const { x, y, halfLength } = BOARD.hinge;
+function drawHinge(context, hinge) {
+  const { x, y, halfLength, radius } = hinge;
   const plateWidth = halfLength * 2 + 28;
   context.save();
   context.translate(x, y);
@@ -111,7 +111,7 @@ function drawHinge(context) {
   context.moveTo(-halfLength, 0);
   context.lineTo(halfLength, 0);
   context.strokeStyle = "#777064";
-  context.lineWidth = BOARD.hinge.radius * 2;
+  context.lineWidth = radius * 2;
   context.stroke();
   context.beginPath();
   context.moveTo(-halfLength + 2, -3);

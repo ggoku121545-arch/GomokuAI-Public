@@ -64,11 +64,12 @@ export function playAlkagiLaunch(power = 0.35) {
   tone({ frequency: 520 + strength * 240, endFrequency: 180 + strength * 90, duration: 0.035, volume: 0.025 + strength * 0.035, type: "sine", delay: 0.008 });
 }
 
-export function playAlkagiCollision(impulse = 0) {
+export function playAlkagiCollision(impulse = 0, volumeMultiplier = 1) {
   const now = typeof performance === "undefined" ? Date.now() : performance.now();
   if (now - lastCollisionAt < 48 || impulse < 24) return;
   lastCollisionAt = now;
   const strength = Math.max(0, Math.min(1, (impulse - 24) / 520));
-  tone({ frequency: 300 - strength * 125, endFrequency: 110 - strength * 45, duration: 0.045 + strength * 0.035, volume: 0.035 + strength * 0.14, type: "triangle" });
-  if (strength > 0.35) tone({ frequency: 780 - strength * 280, endFrequency: 300 - strength * 120, duration: 0.026, volume: 0.025 + strength * 0.045, type: "sine", delay: 0.003 });
+  const volumeScale = Math.max(0, volumeMultiplier);
+  tone({ frequency: 300 - strength * 125, endFrequency: 110 - strength * 45, duration: 0.045 + strength * 0.035, volume: (0.035 + strength * 0.14) * volumeScale, type: "triangle" });
+  if (strength > 0.35) tone({ frequency: 780 - strength * 280, endFrequency: 300 - strength * 120, duration: 0.026, volume: (0.025 + strength * 0.045) * volumeScale, type: "sine", delay: 0.003 });
 }
