@@ -23,6 +23,6 @@
     [Parameter] public string Active { get; set; } = string.Empty;
 
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
-    private void GoGame() => Navigation.NavigateTo("game/gomoku");
+    private void GoGame() => Navigation.NavigateTo("games");
     private void GoRecords() => Navigation.NavigateTo("records");
 }

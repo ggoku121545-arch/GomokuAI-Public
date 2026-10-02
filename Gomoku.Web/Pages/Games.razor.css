@@ -1,0 +1,50 @@
+.games-page { padding-top: max(20px, env(safe-area-inset-top)); }
+.games-header { margin-bottom: 18px; }
+.games-count { color: #66696e; font-size: .76rem; font-weight: 800; white-space: nowrap; }
+.games-hint { margin: 0 4px 14px; color: #66686c; font-size: .76rem; font-weight: 700; line-height: 1.5; }
+.game-options { display: flex; flex-direction: column; gap: 12px; }
+.game-option {
+    --game-order: 0;
+    position: relative;
+    order: var(--game-order);
+    width: 100%;
+    min-height: 102px;
+    display: grid;
+    grid-template-columns: 66px minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 13px;
+    color: var(--sketch-ink);
+    text-align: left;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+.game-option:focus-visible { outline: 3px solid #2c6bbf; outline-offset: 3px; }
+.game-option:active { transform: translate(1px, 2px); }
+.game-option.coming-soon { color: #62646a; }
+.game-option.dragging { z-index: 2; opacity: .83; transform: rotate(-1deg) scale(1.025); box-shadow: 4px 6px 0 #30323838, inset 0 0 26px #79705f0c; }
+.game-option.drop-target { outline: 2px dashed #2c6bbf; outline-offset: 3px; }
+.game-option-icon { width: 58px; height: 58px; display: grid; place-items: center; border: 2px solid #4c4d4e; border-radius: 16px 13px 17px 14px; background: #eee7d8; box-shadow: 2px 3px 0 #30323825; font: 700 2.35rem/1 "Gaegu Local", cursive; transform: rotate(-2deg); }
+.gomoku-icon { color: #242424; text-shadow: 2px 2px #fff, -1px -1px #5c5a56; }
+.alkagi-icon { color: #315f95; background: #e5edf4; }
+.soon-icon { color: #77797d; background: #eeeeec; }
+.game-option-copy { min-width: 0; display: grid; gap: 5px; }
+.game-option-copy strong { font-size: 1.25rem; line-height: 1.1; }
+.game-option-copy > span { color: #686a6e; font-size: .7rem; font-weight: 700; line-height: 1.4; }
+.game-option-actions { display: grid; justify-items: center; gap: 4px; color: #55575b; }
+.drag-grip { display: grid; gap: 3px; padding: 5px; opacity: .7; }
+.drag-grip i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: 8px 0 currentColor; }
+.game-arrow { min-height: 20px; font: 700 1.5rem/1 "Gaegu Local", cursive; }
+.games-order-note { margin: 13px 4px 0; color: #7a7b7f; font-size: .64rem; font-weight: 700; text-align: center; }
+
+@media (max-width: 380px) {
+    .game-option { min-height: 94px; grid-template-columns: 58px minmax(0, 1fr) 42px; gap: 9px; padding: 12px 10px; }
+    .game-option-icon { width: 52px; height: 52px; }
+    .game-option-copy strong { font-size: 1.13rem; }
+    .game-option-copy > span { font-size: .65rem; }
+}
+
+@media (prefers-reduced-motion: reduce) { .game-option { transition: none; } }

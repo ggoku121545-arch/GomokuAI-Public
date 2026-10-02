@@ -127,7 +127,7 @@
         <button type="button"
                 class="home-hotspot nav-game-hotspot"
                 aria-label="게임"
-                @onclick="StartGomoku"></button>
+                @onclick="OpenGames"></button>
 
         <button type="button"
                 class="home-hotspot nav-vault-hotspot"
@@ -162,6 +162,7 @@
 
     private void StartGomoku() => Navigation.NavigateTo("game/gomoku");
     private void StartAlkagi() => Navigation.NavigateTo("game/alkagi");
+    private void OpenGames() => Navigation.NavigateTo("games");
     private void OpenRecords() => Navigation.NavigateTo("records");
     private void OpenSettings() => Navigation.NavigateTo("settings");
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);

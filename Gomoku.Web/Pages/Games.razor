@@ -1,0 +1,114 @@
+@page "/games"
+@implements IAsyncDisposable
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<PageTitle>게임 선택 · GomokuAI</PageTitle>
+
+<main class="sketch-page games-page">
+    <header class="subpage-header games-header">
+        <button type="button" class="back-button" aria-label="홈으로 돌아가기" @onclick="GoHome">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
+        </button>
+        <div><span>GAME SELECT</span><h1>게임</h1></div>
+        <span class="games-count">@orderedGames.Count개</span>
+    </header>
+
+    <p class="games-hint">게임을 선택하거나, 칸을 길게 눌러 순서를 바꿔보세요.</p>
+
+    <section @ref="gameList" class="game-options" aria-label="게임 선택 및 순서 변경">
+        @foreach (var game in orderedGames)
+        {
+            <button @key="game.Id"
+                    type="button"
+                    class="game-option sketch-panel @(game.IsAvailable ? null : "coming-soon")"
+                    data-game-id="@game.Id"
+                    aria-label="@(game.IsAvailable ? $"{game.Name} 시작. 길게 눌러 순서 변경" : $"{game.Name}, 아직 준비 중. 길게 눌러 순서 변경")"
+                    aria-disabled="@(!game.IsAvailable)"
+                    @onclick="() => SelectGame(game)">
+                <span class="game-option-icon @game.IconClass" aria-hidden="true">@game.Icon</span>
+                <span class="game-option-copy">
+                    <strong>@game.Name</strong>
+                    <span>@game.Description</span>
+                </span>
+                <span class="game-option-actions" aria-hidden="true">
+                    <span class="drag-grip"><i></i><i></i><i></i></span>
+                    <span class="game-arrow">@(game.IsAvailable ? "›" : "· · ·")</span>
+                </span>
+            </button>
+        }
+    </section>
+
+    <p class="games-order-note">순서는 이 기기에 저장됩니다.</p>
+    <SketchBottomNav Active="game" />
+</main>
+
+@code {
+    private static readonly GameOption[] Games =
+    [
+        new("gomoku", "오목", "AI와 두는 클래식 오목", "●", "gomoku-icon", true, "game/gomoku"),
+        new("alkagi", "알까기", "돌을 튕겨 상대 돌을 밀어내세요", "◉", "alkagi-icon", true, "game/alkagi"),
+        new("coming-soon", "준비 중", "새로운 게임이 곧 찾아옵니다", "…", "soon-icon", false, string.Empty)
+    ];
+
+    private readonly string[] defaultOrder = ["gomoku", "alkagi", "coming-soon"];
+    private string[] gameOrder = ["gomoku", "alkagi", "coming-soon"];
+    private ElementReference gameList;
+    private Microsoft.JSInterop.IJSObjectReference? module;
+    private Microsoft.JSInterop.DotNetObjectReference<Games>? dotNetReference;
+    private bool orderLoaded;
+    private bool reorderEnabled;
+
+    private IReadOnlyList<GameOption> orderedGames => gameOrder
+        .Select(id => Games.First(game => game.Id == id))
+        .ToArray();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<Microsoft.JSInterop.IJSObjectReference>("import", "./js/game-menu.js");
+            dotNetReference = Microsoft.JSInterop.DotNetObjectReference.Create(this);
+            gameOrder = await module.InvokeAsync<string[]>("loadOrder", defaultOrder);
+            orderLoaded = true;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (orderLoaded && !reorderEnabled && module is not null && dotNetReference is not null)
+        {
+            await module.InvokeVoidAsync("enableReorder", gameList, dotNetReference, gameOrder);
+            reorderEnabled = true;
+        }
+    }
+
+    private void SelectGame(GameOption game)
+    {
+        if (game.IsAvailable) Navigation.NavigateTo(game.Route);
+    }
+
+    private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
+
+    [Microsoft.JSInterop.JSInvokable]
+    public Task OnGameOrderChanged(string[] order)
+    {
+        if (order.Length != Games.Length || order.Distinct(StringComparer.Ordinal).Count() != Games.Length ||
+            order.Any(id => !Games.Any(game => game.Id == id))) return Task.CompletedTask;
+
+        gameOrder = order;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try { await module.InvokeVoidAsync("disableReorder", gameList); await module.DisposeAsync(); }
+            catch (Microsoft.JSInterop.JSException) { }
+            catch (Microsoft.JSInterop.JSDisconnectedException) { }
+        }
+        dotNetReference?.Dispose();
+    }
+
+    private sealed record GameOption(string Id, string Name, string Description, string Icon, string IconClass, bool IsAvailable, string Route);
+}

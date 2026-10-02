@@ -9,8 +9,8 @@ export const BOARD = Object.freeze({
   maxPull: 180,
   setupDivider: 500,
   hinges: Object.freeze([
-    Object.freeze({ id: "left", x: 350, y: 500, halfLength: 42, radius: 11 }),
-    Object.freeze({ id: "right", x: 650, y: 500, halfLength: 42, radius: 11 }),
+    Object.freeze({ id: "left", x: 106, y: 500, halfLength: 42, radius: 11 }),
+    Object.freeze({ id: "right", x: 894, y: 500, halfLength: 42, radius: 11 }),
   ]),
 });
 
