@@ -1,36 +1,78 @@
-.settings-page { padding-top: max(18px, env(safe-area-inset-top)); }
 .settings-page {
+    width: min(100%, 432px);
+    padding-top: max(20px, env(safe-area-inset-top));
     font-family: "Gaegu Local", "Nanum Pen Script", "Segoe Print", cursive;
 }
-.settings-section { margin-bottom: 14px; padding: 17px 16px; }
-.settings-section:nth-of-type(2) { transform: rotate(.13deg); }
-.settings-section:nth-of-type(3) { transform: rotate(-.1deg); }
+.settings-page .subpage-header { margin-bottom: 20px; }
 .settings-section {
+    margin-bottom: 14px;
+    padding: 17px 16px 15px;
     background-image: repeating-linear-gradient(-12deg, transparent 0 12px, rgb(67 66 62 / 2.6%) 12px 13px);
 }
-.section-title { display: flex; align-items: center; gap: 11px; margin-bottom: 15px; }
-.section-title > span { width: 39px; height: 39px; flex: 0 0 39px; display: grid; place-items: center; border: 2px solid #52555a; border-radius: 11px 9px 13px 10px; background: repeating-linear-gradient(-14deg, #f9f6ed 0 5px, #eeeae0 6px 7px); font-size: 1.25rem; font-weight: 900; transform: rotate(-2deg); }
+.settings-section:nth-of-type(2) { transform: rotate(.1deg); }
+.settings-section:nth-of-type(3) { transform: rotate(-.08deg); }
+.section-title { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+.section-title > span {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #52555a;
+    border-radius: 15px 13px 16px 14px;
+    color: #343332;
+    background: repeating-linear-gradient(-14deg, #f9f6ed 0 5px, #eeeae0 6px 7px);
+    font-size: 1.8rem;
+    font-weight: 900;
+    transform: rotate(-2deg);
+}
 .section-title div { min-width: 0; }
-.section-title h2 { margin: 0; font-size: 1.32rem; letter-spacing: -.025em; }
-.section-title p { margin: 3px 0 0; color: #66645f; font-size: .9rem; line-height: 1.25; }
-label { display: block; margin: 0 0 6px 2px; color: #5e5b56; font-size: .92rem; font-weight: 850; }
+.section-title h2 { margin: 0; font-size: 1.48rem; letter-spacing: -.025em; line-height: 1.05; }
+.section-title p { margin: 5px 0 0; color: #66645f; font-size: 1.04rem; line-height: 1.18; }
+.settings-section label { display: block; margin: 0 0 6px 3px; color: #5e5b56; font-size: 1.06rem; font-weight: 850; }
 .name-input-row { position: relative; }
-input { width: 100%; min-height: 48px; padding: 10px 68px 10px 12px; border: 2px solid #5b5e63; border-radius: 11px 14px 10px 13px; outline: 0; color: var(--sketch-ink); background: repeating-linear-gradient(-10deg, #fffefa 0 9px, #f7f5ee 10px 11px); font: inherit; font-size: 1.05rem; font-weight: 800; }
-input:focus { border-color: var(--sketch-blue); box-shadow: 0 0 0 3px #2d73d526; }
-.name-input-row > span { position: absolute; right: 11px; top: 50%; color: #77756f; font-size: .75rem; transform: translateY(-50%); }
-.primary-button, .danger-button, .reset-confirm button { min-height: 43px; padding: 8px 15px; border-radius: 12px 10px 14px 11px; font: inherit; font-size: 1.08rem; font-weight: 900; cursor: pointer; }
-.primary-button { width: 100%; margin-top: 10px; border: 2px solid var(--sketch-blue); color: #1757aa; background: repeating-linear-gradient(-12deg, #e4efff 0 8px, #d6e6fc 9px 10px); }
-.save-message, .reset-message { min-height: 1em; margin: 8px 2px 0; color: #2b7652; font-size: .84rem; font-weight: 750; }
-ul { margin: 0; padding: 0 0 0 23px; color: #55534f; font-size: .96rem; line-height: 1.55; }
-li::marker { color: var(--sketch-blue); }
+.settings-section input {
+    width: 100%;
+    min-height: 58px;
+    padding: 11px 73px 11px 14px;
+    border: 2px solid #5b5e63;
+    border-radius: 15px 17px 14px 17px;
+    outline: 0;
+    color: var(--sketch-ink);
+    background: repeating-linear-gradient(-10deg, #fffefa 0 9px, #f7f5ee 10px 11px);
+    font: inherit;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+.settings-section input:focus { border-color: var(--sketch-blue); box-shadow: 0 0 0 3px #2d73d526; }
+.name-input-row > span { position: absolute; right: 12px; bottom: 11px; color: #77756f; font-size: .98rem; }
+.primary-button, .danger-button, .reset-confirm button {
+    min-height: 50px;
+    padding: 8px 15px;
+    border-radius: 15px 13px 16px 14px;
+    font: inherit;
+    font-size: 1.32rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+.primary-button { width: 100%; margin-top: 11px; border: 2px solid var(--sketch-blue); color: #1757aa; background: repeating-linear-gradient(-12deg, #e4efff 0 8px, #d6e6fc 9px 10px); }
+.save-message, .reset-message { min-height: 1em; margin: 6px 2px 0; color: #2b7652; font-size: .88rem; font-weight: 750; }
+.settings-section ul { margin: 2px 0 0; padding: 0 0 0 25px; color: #55534f; font-size: 1.08rem; line-height: 1.7; }
+.settings-section li { padding-left: 2px; }
+.settings-section li::marker { color: var(--sketch-blue); font-size: 1.05rem; }
 .danger-section { border-color: #815b5b; background-image: repeating-linear-gradient(-12deg, transparent 0 12px, rgb(142 69 69 / 3%) 12px 13px); }
-.danger-button { border: 2px solid #b75050; color: #a23d3d; background: repeating-linear-gradient(-12deg, #fff0ed 0 8px, #f8e2de 9px 10px); }
-.reset-confirm { padding: 13px; border: 2px dashed #b75050; border-radius: 12px 15px 11px 14px; background: repeating-linear-gradient(-12deg, #fff8f4 0 9px, #f9eee8 10px 11px); }
-.reset-confirm > strong { display: block; color: #843838; font-size: 1.08rem; }
-.reset-confirm > p { margin: 4px 0 11px; color: #756163; font-size: .84rem; }
+.danger-button { width: 100%; border: 2px solid #b75050; color: #a23d3d; background: repeating-linear-gradient(-12deg, #fff0ed 0 8px, #f8e2de 9px 10px); }
+.reset-confirm { padding: 13px; border: 2px dashed #b75050; border-radius: 14px 16px 13px 15px; background: repeating-linear-gradient(-12deg, #fff8f4 0 9px, #f9eee8 10px 11px); }
+.reset-confirm > strong { display: block; color: #843838; font-size: 1.16rem; }
+.reset-confirm > p { margin: 4px 0 11px; color: #756163; font-size: .94rem; }
 .reset-confirm > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .reset-confirm button:not(.danger-button) { border: 2px solid #74767b; color: #55585d; background: #fffefa; }
 
 @media (max-width: 380px) {
+    .settings-page { padding-inline: 12px; }
     .settings-section { padding-inline: 13px; }
+    .section-title > span { width: 48px; height: 48px; flex-basis: 48px; }
+    .section-title h2 { font-size: 1.35rem; }
+    .section-title p { font-size: .92rem; }
+    .settings-section ul { font-size: 1rem; }
 }
