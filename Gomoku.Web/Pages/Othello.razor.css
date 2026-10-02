@@ -11,6 +11,11 @@
 .black-turn { color: #f9f8f5; background: repeating-linear-gradient(-13deg, #343536 0 8px, #292a2b 9px 10px); }
 .white-turn { color: #333; background: repeating-linear-gradient(-13deg, #fffefa 0 8px, #efeee9 9px 10px); }
 
+.othello-mode-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 0 2px 10px; padding: 4px; border: 1.5px dashed #686862; border-radius: 12px 10px 13px 11px; background: #f3f1eb9c; transform: rotate(-.08deg); }
+.mode-button { min-height: 38px; padding: 5px 8px; border: 1.5px solid transparent; border-radius: 9px 8px 10px 8px; color: #5a5954; background: transparent; font: 700 1.05rem "Gaegu Local", "Nanum Pen Script", cursive; cursor: pointer; touch-action: manipulation; }
+.mode-button.selected { border-color: #4a4b48; color: #272726; background: repeating-linear-gradient(-12deg, #fffefa 0 8px, #efeee8 9px 10px); box-shadow: 1px 2px 0 #30323820; }
+.mode-button:focus-visible { outline: 3px solid #2c6bbf; outline-offset: 2px; }
+
 .othello-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; transform: rotate(.08deg); }
 .othello-player { min-width: 0; display: grid; grid-template-columns: 31px minmax(0, 1fr); align-items: center; gap: 7px; padding: 7px 8px; border: 1px dashed transparent; border-radius: 10px 8px 11px 9px; opacity: .72; }
 .othello-player.active { border-color: #65666a; background: #ffffff85; opacity: 1; }
@@ -65,6 +70,7 @@
 
 @media (max-width: 380px) {
     .othello-page { padding-inline: 12px; }
+    .mode-button { min-height: 36px; font-size: 1rem; }
     .othello-header { grid-template-columns: 42px minmax(0, 1fr) auto; }
     .othello-turn-chip { max-width: 76px; padding-inline: 5px; font-size: .84rem; }
     .othello-player { grid-template-columns: 26px minmax(0, 1fr); gap: 5px; padding-inline: 5px; }

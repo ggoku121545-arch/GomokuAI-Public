@@ -10,11 +10,16 @@
         <button type="button" class="back-button" aria-label="게임 선택으로 돌아가기" @onclick="GoGames">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
         </button>
-        <div><span>OTHELLO · LOCAL 2 PLAYER</span><h1>오델로</h1></div>
+        <div><span>OTHELLO · @(playAgainstAi ? "VS COMPUTER" : "LOCAL 2 PLAYER")</span><h1>오델로</h1></div>
         <span class="othello-turn-chip @(game.CurrentPlayer == OthelloDisc.Black ? "black-turn" : "white-turn")" aria-live="polite">
             @(game.State == OthelloState.Playing ? $"{DiscName(game.CurrentPlayer)} 차례" : "대국 종료")
         </span>
     </header>
+
+    <div class="othello-mode-picker" role="group" aria-label="대전 방식 선택">
+        <button type="button" class="mode-button @(playAgainstAi ? null : "selected")" aria-pressed="@(!playAgainstAi)" @onclick="() => SetMode(false)">2인 대전</button>
+        <button type="button" class="mode-button @(playAgainstAi ? "selected" : null)" aria-pressed="@playAgainstAi" @onclick="() => SetMode(true)">AI 대전</button>
+    </div>
 
     <section class="othello-score sketch-panel" aria-label="플레이어 돌 개수와 현재 차례">
         <div class="othello-player black-player @(game.CurrentPlayer == OthelloDisc.Black && game.State == OthelloState.Playing ? "active" : null)">
@@ -23,7 +28,7 @@
         </div>
         <div class="othello-player white-player @(game.CurrentPlayer == OthelloDisc.White && game.State == OthelloState.Playing ? "active" : null)">
             <span class="score-disc" aria-hidden="true"></span>
-            <div><strong>@whitePlayerName</strong><span>백돌 · @game.WhiteCount</span></div>
+            <div><strong>@(playAgainstAi ? "오델로 AI" : whitePlayerName)</strong><span>백돌 · @game.WhiteCount</span></div>
         </div>
     </section>
 
@@ -35,6 +40,10 @@
         else if (game.LastPassedPlayer is OthelloDisc passedPlayer)
         {
             <span class="pass-note">@DiscName(passedPlayer)은 둘 곳이 없어 차례를 건너뜁니다.</span>
+        }
+        else if (isAiThinking)
+        {
+            <span>오델로 AI가 수를 생각하고 있습니다…</span>
         }
         else if (moveMessage.Length > 0)
         {
@@ -64,7 +73,7 @@
                                 aria-label="@CellLabel(position, disc, isLegal)"
                                 aria-rowindex="@(row + 1)"
                                 aria-colindex="@(column + 1)"
-                                disabled="@(game.State != OthelloState.Playing || isAnimating || disc != OthelloDisc.Empty)"
+                                disabled="@(game.State != OthelloState.Playing || isAnimating || isAiThinking || (playAgainstAi && game.CurrentPlayer != OthelloDisc.Black) || disc != OthelloDisc.Empty)"
                                 @onclick="() => Play(position)">
                             @if (disc != OthelloDisc.Empty)
                             {
@@ -88,9 +97,12 @@
 
     @if (game.Result is { } result)
     {
+        var winnerName = result.Winner == OthelloDisc.Black
+            ? blackPlayerName
+            : playAgainstAi ? "오델로 AI" : whitePlayerName;
         var resultTitle = result.Outcome == MatchOutcome.Draw
             ? "무승부"
-            : $"{(result.Winner == OthelloDisc.Black ? blackPlayerName : whitePlayerName)} 승리!";
+            : $"{winnerName} 승리!";
         <div class="othello-modal-backdrop" role="presentation">
             <section class="othello-modal sketch-panel" role="dialog" aria-modal="true" aria-labelledby="othello-result-title">
                 <span class="result-stones" aria-hidden="true"><i></i><i></i></span>
@@ -111,6 +123,8 @@
     private string whitePlayerName = "플레이어 2";
     private string moveMessage = string.Empty;
     private bool isAnimating;
+    private bool isAiThinking;
+    private bool playAgainstAi = true;
     private int animationId;
 
     protected override async Task OnInitializedAsync()
@@ -121,7 +135,8 @@
 
     private async Task Play(OthelloPosition position)
     {
-        if (game.State != OthelloState.Playing || isAnimating) return;
+        if (game.State != OthelloState.Playing || isAnimating || isAiThinking ||
+            (playAgainstAi && game.CurrentPlayer != OthelloDisc.Black)) return;
         if (!game.TryPlay(position))
         {
             moveMessage = "그곳에는 둘 수 없어요. 표시된 동그라미를 선택하세요.";
@@ -129,23 +144,60 @@
         }
 
         moveMessage = string.Empty;
+        if (!await AnimateLastMoveAsync()) return;
+        await PlayAiTurnsAsync();
+    }
+
+    private async Task<bool> AnimateLastMoveAsync()
+    {
         flippingStones = game.LastFlippedStones.ToHashSet();
-        if (flippingStones.Count == 0) return;
+        if (flippingStones.Count == 0) return true;
 
         isAnimating = true;
         var currentAnimation = ++animationId;
         await InvokeAsync(StateHasChanged);
         await Task.Delay(440);
-        if (currentAnimation != animationId) return;
+        if (currentAnimation != animationId) return false;
         flippingStones.Clear();
         isAnimating = false;
         await InvokeAsync(StateHasChanged);
+        return true;
+    }
+
+    private async Task PlayAiTurnsAsync()
+    {
+        while (playAgainstAi && game.State == OthelloState.Playing && game.CurrentPlayer == OthelloDisc.White)
+        {
+            var currentTurn = animationId;
+            isAiThinking = true;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(350);
+            if (currentTurn != animationId) return;
+
+            var move = OthelloAi.ChooseMove(game, OthelloDisc.White);
+            isAiThinking = false;
+            if (move is null || !game.TryPlay(move.Value))
+            {
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+
+            if (!await AnimateLastMoveAsync()) return;
+        }
+    }
+
+    private void SetMode(bool againstAi)
+    {
+        if (playAgainstAi == againstAi) return;
+        playAgainstAi = againstAi;
+        Restart();
     }
 
     private void Restart()
     {
         animationId++;
         isAnimating = false;
+        isAiThinking = false;
         flippingStones.Clear();
         moveMessage = string.Empty;
         game.Reset();
