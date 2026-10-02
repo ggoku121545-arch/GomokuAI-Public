@@ -69,7 +69,7 @@
         {
             module = await JS.InvokeAsync<Microsoft.JSInterop.IJSObjectReference>("import", "./js/game-menu.js");
             dotNetReference = Microsoft.JSInterop.DotNetObjectReference.Create(this);
-            gameOrder = await module.InvokeAsync<string[]>("loadOrder", defaultOrder);
+            gameOrder = await module.InvokeAsync<string[]>("loadOrder", new object?[] { defaultOrder });
             orderLoaded = true;
             await InvokeAsync(StateHasChanged);
             return;
