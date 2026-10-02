@@ -26,9 +26,9 @@ public class OthelloGameTests
         var board = EmptyBoard();
         var center = new OthelloPosition(3, 3);
         var directions = new (int Row, int Column)[]
-        [
+        {
             (-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)
-        ];
+        };
         foreach (var (dr, dc) in directions)
         {
             board[center.Row + dr, center.Column + dc] = OthelloDisc.White;
