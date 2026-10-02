@@ -100,7 +100,7 @@ public class OthelloGameTests
         Assert.True(game.TryPlay(new OthelloPosition(7, 7)));
 
         Assert.Equal(OthelloState.BlackWins, game.State);
-        Assert.Equal(new OthelloMatchResult(OthelloDisc.Black, MatchOutcome.Win, 63, 0, 1, game.Result!.FinishedAtUtc), game.Result);
+        Assert.Equal(new OthelloMatchResult(OthelloDisc.Black, MatchOutcome.Win, 64, 0, 1, game.Result!.FinishedAtUtc), game.Result);
     }
 
     [Fact]
@@ -126,6 +126,9 @@ public class OthelloGameTests
         for (var column = 0; column < OthelloGame.BoardSize; column++)
             board[row, column] = OthelloDisc.Black;
         board[0, 0] = OthelloDisc.White;
+        board[0, 1] = OthelloDisc.White;
+        board[1, 0] = OthelloDisc.White;
+        board[1, 1] = OthelloDisc.White;
         board[7, 7] = OthelloDisc.Empty;
         var game = OthelloGame.FromPosition(board, OthelloDisc.Black);
 
