@@ -129,7 +129,7 @@ public class OthelloGameTests
         board[0, 1] = OthelloDisc.White;
         board[1, 0] = OthelloDisc.White;
         board[1, 1] = OthelloDisc.White;
-        board[7, 7] = OthelloDisc.Empty;
+        board[7, 4] = OthelloDisc.Empty;
         var game = OthelloGame.FromPosition(board, OthelloDisc.Black);
 
         Assert.Equal(OthelloState.BlackWins, game.State);
