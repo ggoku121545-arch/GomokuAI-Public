@@ -48,11 +48,12 @@
     [
         new("gomoku", "오목", "AI와 두는 클래식 오목", "●", "gomoku-icon", true, "game/gomoku"),
         new("alkagi", "알까기", "돌을 튕겨 상대 돌을 밀어내세요", "◉", "alkagi-icon", true, "game/alkagi"),
+        new("othello", "오델로", "흑백 돌을 뒤집는 8×8 대국", "◐", "othello-icon", true, "game/othello"),
         new("coming-soon", "준비 중", "새로운 게임이 곧 찾아옵니다", "…", "soon-icon", false, string.Empty)
     ];
 
-    private readonly string[] defaultOrder = ["gomoku", "alkagi", "coming-soon"];
-    private string[] gameOrder = ["gomoku", "alkagi", "coming-soon"];
+    private readonly string[] defaultOrder = ["gomoku", "alkagi", "othello", "coming-soon"];
+    private string[] gameOrder = ["gomoku", "alkagi", "othello", "coming-soon"];
     private ElementReference gameList;
     private Microsoft.JSInterop.IJSObjectReference? module;
     private Microsoft.JSInterop.DotNetObjectReference<Games>? dotNetReference;
