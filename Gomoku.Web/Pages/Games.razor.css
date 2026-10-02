@@ -30,6 +30,7 @@
 .game-option-icon { width: 58px; height: 58px; display: grid; place-items: center; border: 2px solid #4c4d4e; border-radius: 16px 13px 17px 14px; background: #eee7d8; box-shadow: 2px 3px 0 #30323825; font: 700 2.35rem/1 "Gaegu Local", cursive; transform: rotate(-2deg); }
 .gomoku-icon { color: #242424; text-shadow: 2px 2px #fff, -1px -1px #5c5a56; }
 .alkagi-icon { color: #315f95; background: #e5edf4; }
+.othello-icon { color: #355d48; background: #edf2e9; text-shadow: 1px 1px #fff; }
 .soon-icon { color: #77797d; background: #eeeeec; }
 .game-option-copy { min-width: 0; display: grid; gap: 5px; }
 .game-option-copy strong { font-size: 1.25rem; line-height: 1.1; }

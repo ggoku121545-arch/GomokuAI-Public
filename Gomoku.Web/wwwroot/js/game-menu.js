@@ -1,19 +1,21 @@
 const storageKey = "gomoku-ai-game-order-v1";
 const cleanups = new WeakMap();
 
-function validOrder(value, allowedIds) {
-  return Array.isArray(value) && value.length === allowedIds.length &&
-    new Set(value).size === allowedIds.length && value.every((id) => allowedIds.includes(id));
+function migrateOrder(value, allowedIds) {
+  if (!Array.isArray(value)) return [...allowedIds];
+  const savedOrder = value.filter((id, index) =>
+    typeof id === "string" && allowedIds.includes(id) && value.indexOf(id) === index);
+  return [...savedOrder, ...allowedIds.filter((id) => !savedOrder.includes(id))];
 }
 
 export function loadOrder(defaultIds) {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-    if (validOrder(saved, defaultIds)) return saved;
+    return migrateOrder(saved, defaultIds);
   } catch {
     // Storage may be unavailable in private browsing; keep the default ordering.
+    return [...defaultIds];
   }
-  return defaultIds;
 }
 
 export function enableReorder(list, dotNetReference, initialOrder) {

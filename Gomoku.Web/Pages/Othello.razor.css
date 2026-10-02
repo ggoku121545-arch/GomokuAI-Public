@@ -1,0 +1,77 @@
+.othello-page {
+    width: min(100%, 520px);
+    padding-top: max(14px, env(safe-area-inset-top));
+    font-family: "Gaegu Local", "Nanum Pen Script", "Segoe Print", cursive;
+}
+
+.othello-header { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 8px; margin-bottom: 13px; }
+.othello-header > div > span { font-size: .58rem; letter-spacing: .12em; }
+.othello-header h1 { font-size: clamp(1.85rem, 8vw, 2.6rem); }
+.othello-turn-chip { max-width: 92px; padding: 6px 8px; border: 1.7px solid #494b4e; border-radius: 12px 10px 13px 11px; font-size: .92rem; font-weight: 800; text-align: center; transform: rotate(.5deg); }
+.black-turn { color: #f9f8f5; background: repeating-linear-gradient(-13deg, #343536 0 8px, #292a2b 9px 10px); }
+.white-turn { color: #333; background: repeating-linear-gradient(-13deg, #fffefa 0 8px, #efeee9 9px 10px); }
+
+.othello-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; transform: rotate(.08deg); }
+.othello-player { min-width: 0; display: grid; grid-template-columns: 31px minmax(0, 1fr); align-items: center; gap: 7px; padding: 7px 8px; border: 1px dashed transparent; border-radius: 10px 8px 11px 9px; opacity: .72; }
+.othello-player.active { border-color: #65666a; background: #ffffff85; opacity: 1; }
+.score-disc { width: 26px; height: 26px; border: 1px solid #262626; border-radius: 50%; box-shadow: 1px 2px 3px #0004; }
+.black-player .score-disc, .black-stone { background: radial-gradient(circle at 34% 26%, #656565 0, #1b1b1b 44%, #050505 100%); }
+.white-player .score-disc, .white-stone { background: radial-gradient(circle at 34% 26%, #fff 0, #f5f4ee 55%, #d0cec6 100%); }
+.othello-player > div { min-width: 0; display: grid; line-height: 1.1; }
+.othello-player strong { overflow: hidden; font-size: 1.12rem; text-overflow: ellipsis; white-space: nowrap; }
+.othello-player > div > span { color: #666560; font-size: .92rem; font-weight: 700; }
+
+.othello-status { min-height: 1.6em; margin: 8px 2px; color: #575752; font-size: 1.04rem; font-weight: 700; line-height: 1.35; text-align: center; }
+.pass-note { color: #8a6016; }
+.invalid-note { color: #ad3d3d; }
+.othello-board-wrap { position: relative; width: 100%; margin: 0 auto; padding: 4px; isolation: isolate; }
+.othello-board-wrap::before, .othello-board-wrap::after { content: ""; position: absolute; z-index: -1; inset: 0 2px 1px 0; border: 2px solid #484943; border-radius: 15px 12px 16px 13px; transform: rotate(.18deg); }
+.othello-board-wrap::after { inset: 2px 0 0 2px; border-width: 1px; opacity: .55; transform: rotate(-.18deg); }
+.othello-board { display: grid; grid-template-rows: repeat(8, minmax(0, 1fr)); width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border: 2px solid #454744; border-radius: 12px 10px 13px 11px; background: #f6f5ef; box-shadow: 2px 3px 0 #30323825, inset 0 0 30px #77705f12; }
+.othello-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); min-height: 0; }
+.othello-cell { position: relative; display: grid; min-width: 0; min-height: 0; place-items: center; margin: 0; padding: 0; border: 0; border-right: 1px solid #4c4e4b9c; border-bottom: 1px solid #4c4e4b9c; color: inherit; background: repeating-linear-gradient(-12deg, #f8f7f2 0 14px, #f2f1eb 15px 16px); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.othello-row:last-child .othello-cell { border-bottom: 0; }
+.othello-cell:last-child { border-right: 0; }
+.othello-cell:disabled { cursor: default; }
+.othello-cell:not(:disabled):active { background: #e7edf5; }
+.othello-cell:focus-visible { z-index: 1; outline: 3px solid #2c6bbf; outline-offset: -3px; }
+.othello-stone { display: block; width: 75%; height: 75%; border: 1px solid #272727; border-radius: 50%; box-shadow: 1px 2px 3px #0005, inset 0 0 0 1px #ffffff20; backface-visibility: hidden; }
+.white-stone { border-color: #89877f; box-shadow: 1px 2px 3px #0004, inset 0 0 0 1px #fff; }
+.legal-marker { width: 22%; height: 22%; border: 1.5px solid #4b4b47a6; border-radius: 50%; background: #4b4b4725; box-shadow: 0 0 0 2px #ffffff80; }
+.legal-cell:active .legal-marker { background: #2c6bbf85; }
+.othello-stone.flipping { animation: pencil-flip 440ms ease-in-out both; transform-style: preserve-3d; }
+@keyframes pencil-flip {
+    0% { transform: rotateY(0) scale(1); }
+    42% { transform: rotateY(78deg) scale(.82); }
+    52% { transform: rotateY(98deg) scale(.78); }
+    100% { transform: rotateY(180deg) scale(1); }
+}
+
+.othello-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+.othello-button { min-height: 44px; padding: 6px 12px; border: 2px solid #4a4b48; border-radius: 13px 10px 14px 11px; color: #343332; background: repeating-linear-gradient(-12deg, #fffefa 0 9px, #f3f1e8 10px 11px); box-shadow: 2px 3px 0 #30323825; font: 700 1.1rem "Gaegu Local", "Nanum Pen Script", cursive; cursor: pointer; }
+.othello-button:active { transform: translate(1px, 2px); box-shadow: 1px 1px 0 #30323825; }
+.othello-button:focus-visible, .modal-exit:focus-visible { outline: 3px solid #2c6bbf; outline-offset: 2px; }
+.exit-button { color: #555; }
+.othello-modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 20px; background: #22221fb0; }
+.othello-modal { width: min(100%, 340px); padding: 22px 20px 17px; background-color: #f7f6f0; background-image: repeating-linear-gradient(-12deg, transparent 0 12px, #43423e08 12px 13px); text-align: center; }
+.result-stones { display: flex; justify-content: center; margin: 2px auto 10px; }
+.result-stones i { width: 34px; height: 34px; border: 1px solid #272727; border-radius: 50%; background: radial-gradient(circle at 34% 26%, #656565, #080808 75%); box-shadow: 1px 2px 3px #0005; }
+.result-stones i + i { margin-left: -5px; border-color: #99968f; background: radial-gradient(circle at 34% 26%, #fff, #efeee7 65%, #c9c6bc); }
+.othello-modal > p { margin: 0; color: #6c6a65; font-size: 1rem; }
+.othello-modal h2 { margin: 1px 0 9px; font-size: 2rem; line-height: 1.15; }
+.final-score { display: flex; justify-content: center; gap: 10px; margin-bottom: 9px; color: #4c4b47; font-size: 1.3rem; font-weight: 800; }
+.primary-button { width: 100%; margin-top: 8px; border-color: #2c6bbf; color: #1f5598; background: repeating-linear-gradient(-12deg, #e8f1ff 0 8px, #dce9fa 9px 10px); }
+.modal-exit { margin-top: 8px; padding: 5px 9px; border: 0; color: #5b5954; background: transparent; font: inherit; font-size: 1rem; text-decoration: underline; cursor: pointer; }
+
+@media (max-width: 380px) {
+    .othello-page { padding-inline: 12px; }
+    .othello-header { grid-template-columns: 42px minmax(0, 1fr) auto; }
+    .othello-turn-chip { max-width: 76px; padding-inline: 5px; font-size: .84rem; }
+    .othello-player { grid-template-columns: 26px minmax(0, 1fr); gap: 5px; padding-inline: 5px; }
+    .score-disc { width: 22px; height: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .othello-stone.flipping { animation-duration: 1ms; }
+    .othello-button:active { transform: none; }
+}

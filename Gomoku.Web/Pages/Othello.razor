@@ -1,0 +1,170 @@
+@page "/game/othello"
+@implements IDisposable
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject PlayerSettingsStore SettingsStore
+
+<PageTitle>오델로 · GomokuAI</PageTitle>
+
+<main class="sketch-page othello-page">
+    <header class="subpage-header othello-header">
+        <button type="button" class="back-button" aria-label="게임 선택으로 돌아가기" @onclick="GoGames">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
+        </button>
+        <div><span>OTHELLO · LOCAL 2 PLAYER</span><h1>오델로</h1></div>
+        <span class="othello-turn-chip @(game.CurrentPlayer == OthelloDisc.Black ? "black-turn" : "white-turn")" aria-live="polite">
+            @(game.State == OthelloState.Playing ? $"{DiscName(game.CurrentPlayer)} 차례" : "대국 종료")
+        </span>
+    </header>
+
+    <section class="othello-score sketch-panel" aria-label="플레이어 돌 개수와 현재 차례">
+        <div class="othello-player black-player @(game.CurrentPlayer == OthelloDisc.Black && game.State == OthelloState.Playing ? "active" : null)">
+            <span class="score-disc" aria-hidden="true"></span>
+            <div><strong>@blackPlayerName</strong><span>흑돌 · @game.BlackCount</span></div>
+        </div>
+        <div class="othello-player white-player @(game.CurrentPlayer == OthelloDisc.White && game.State == OthelloState.Playing ? "active" : null)">
+            <span class="score-disc" aria-hidden="true"></span>
+            <div><strong>@whitePlayerName</strong><span>백돌 · @game.WhiteCount</span></div>
+        </div>
+    </section>
+
+    <p class="othello-status" aria-live="polite">
+        @if (game.State != OthelloState.Playing)
+        {
+            <span>모든 수가 끝났습니다 · 흑 @game.BlackCount : 백 @game.WhiteCount</span>
+        }
+        else if (game.LastPassedPlayer is OthelloDisc passedPlayer)
+        {
+            <span class="pass-note">@DiscName(passedPlayer)은 둘 곳이 없어 차례를 건너뜁니다.</span>
+        }
+        else if (moveMessage.Length > 0)
+        {
+            <span class="invalid-note">@moveMessage</span>
+        }
+        else
+        {
+            <span>@DiscName(game.CurrentPlayer) 돌을 놓아 상대 돌을 끼워보세요.</span>
+        }
+    </p>
+
+    <section class="othello-board-wrap" aria-label="오델로 보드">
+        <div class="othello-board" role="grid" aria-label="8 곱하기 8 오델로 보드">
+            @for (var row = 0; row < OthelloGame.BoardSize; row++)
+            {
+                <div class="othello-row" role="row">
+                    @for (var column = 0; column < OthelloGame.BoardSize; column++)
+                    {
+                        var position = new OthelloPosition(row, column);
+                        var disc = game[position];
+                        var isLegal = game.State == OthelloState.Playing && game.IsLegalMove(position, game.CurrentPlayer);
+                        var isFlipping = flippingStones.Contains(position);
+                        <button @key="position"
+                                type="button"
+                                role="gridcell"
+                                class="othello-cell @(disc == OthelloDisc.Black ? "black-cell" : disc == OthelloDisc.White ? "white-cell" : null) @(isLegal ? "legal-cell" : null) @(isFlipping ? "flipping-cell" : null)"
+                                aria-label="@CellLabel(position, disc, isLegal)"
+                                aria-rowindex="@(row + 1)"
+                                aria-colindex="@(column + 1)"
+                                disabled="@(game.State != OthelloState.Playing || isAnimating || disc != OthelloDisc.Empty)"
+                                @onclick="() => Play(position)">
+                            @if (disc != OthelloDisc.Empty)
+                            {
+                                <span class="othello-stone @(disc == OthelloDisc.Black ? "black-stone" : "white-stone") @(isFlipping ? "flipping" : null)" aria-hidden="true"></span>
+                            }
+                            else if (isLegal)
+                            {
+                                <span class="legal-marker" aria-hidden="true"></span>
+                            }
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    <footer class="othello-controls">
+        <button type="button" class="othello-button restart-button" @onclick="Restart">다시하기</button>
+        <button type="button" class="othello-button exit-button" @onclick="GoGames">게임 선택</button>
+    </footer>
+
+    @if (game.Result is { } result)
+    {
+        var resultTitle = result.Outcome == MatchOutcome.Draw
+            ? "무승부"
+            : $"{(result.Winner == OthelloDisc.Black ? blackPlayerName : whitePlayerName)} 승리!";
+        <div class="othello-modal-backdrop" role="presentation">
+            <section class="othello-modal sketch-panel" role="dialog" aria-modal="true" aria-labelledby="othello-result-title">
+                <span class="result-stones" aria-hidden="true"><i></i><i></i></span>
+                <p>오델로 대국 종료</p>
+                <h2 id="othello-result-title">@resultTitle</h2>
+                <div class="final-score"><span>흑 @result.BlackCount</span><b>:</b><span>백 @result.WhiteCount</span></div>
+                <button type="button" class="othello-button primary-button" @onclick="Restart">다시 한 판</button>
+                <button type="button" class="modal-exit" @onclick="GoGames">게임 선택으로</button>
+            </section>
+        </div>
+    }
+</main>
+
+@code {
+    private OthelloGame game = new();
+    private HashSet<OthelloPosition> flippingStones = [];
+    private string blackPlayerName = PlayerSettings.DefaultPlayerName;
+    private string whitePlayerName = "플레이어 2";
+    private string moveMessage = string.Empty;
+    private bool isAnimating;
+    private int animationId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await SettingsStore.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(settings.PlayerName)) blackPlayerName = settings.PlayerName;
+    }
+
+    private async Task Play(OthelloPosition position)
+    {
+        if (game.State != OthelloState.Playing || isAnimating) return;
+        if (!game.TryPlay(position))
+        {
+            moveMessage = "그곳에는 둘 수 없어요. 표시된 동그라미를 선택하세요.";
+            return;
+        }
+
+        moveMessage = string.Empty;
+        flippingStones = game.LastFlippedStones.ToHashSet();
+        if (flippingStones.Count == 0) return;
+
+        isAnimating = true;
+        var currentAnimation = ++animationId;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(440);
+        if (currentAnimation != animationId) return;
+        flippingStones.Clear();
+        isAnimating = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void Restart()
+    {
+        animationId++;
+        isAnimating = false;
+        flippingStones.Clear();
+        moveMessage = string.Empty;
+        game.Reset();
+    }
+
+    private void GoGames() => Navigation.NavigateTo("games");
+
+    private static string DiscName(OthelloDisc disc) => disc == OthelloDisc.Black ? "흑" : "백";
+
+    private static string CellLabel(OthelloPosition position, OthelloDisc disc, bool isLegal)
+    {
+        var occupied = disc switch
+        {
+            OthelloDisc.Black => "흑돌",
+            OthelloDisc.White => "백돌",
+            _ => isLegal ? "둘 수 있는 빈 칸" : "빈 칸"
+        };
+        return $"{(char)('A' + position.Column)}{position.Row + 1}, {occupied}";
+    }
+
+    public void Dispose() => animationId++;
+}
