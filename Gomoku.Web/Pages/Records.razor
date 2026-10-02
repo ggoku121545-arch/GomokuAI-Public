@@ -61,10 +61,10 @@
         }
         else
         {
-            <div class="history-list sketch-panel">
+            <div class="history-list">
                 @foreach (var match in FilteredMatches)
                 {
-                    <article class="history-item">
+                    <article class="history-item sketch-panel">
                         <div class="history-icon" aria-hidden="true"><span></span><span></span></div>
                         <div class="history-copy">
                             <div><strong>오목 · vs AI</strong><span class="result @MatchDisplay.OutcomeClass(match.Outcome)">@MatchDisplay.OutcomeText(match.Outcome)</span></div>
@@ -98,7 +98,7 @@
     private string TotalRecord => stats.Draws == 0
         ? $"{stats.Wins}승 {stats.Losses}패"
         : $"{stats.Wins}승 {stats.Losses}패 {stats.Draws}무";
-    private string WinRate => stats.TotalGames == 0 ? "--" : $"{stats.WinRatePercent}%";
+    private string WinRate => $"{stats.WinRatePercent}%";
     private IEnumerable<MatchRecord> FilteredMatches => selectedFilter switch
     {
         "win" => stats.Matches.Where(match => match.Outcome == MatchOutcome.Win),
