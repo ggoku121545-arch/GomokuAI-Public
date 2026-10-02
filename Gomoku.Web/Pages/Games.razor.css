@@ -54,6 +54,14 @@
 .clash-art .impact-star { fill: #fff9e8; stroke: #8b6c37; stroke-width: 1.3; filter: drop-shadow(0 0 3px #f3c56b); }
 .othello-board { background-color: #e6e4dc; }
 .othello-board path { stroke-width: 1.35; }
+.eraser-icon { background-color: #efe5df; }
+.eraser-art .eraser-trail { fill: none; stroke: #716c64; stroke-width: 1.5; stroke-dasharray: 3 4; }
+.eraser-art rect { stroke: #403e3a; stroke-width: 2; filter: drop-shadow(2px 3px 1px #0004); }
+.eraser-art .eraser-blue { fill: #b8d3f3; }
+.eraser-art .eraser-red { fill: #f0c1b9; }
+.eraser-art .eraser-mark-blue { fill: none; stroke: #2769bb; stroke-width: 4; stroke-linecap: round; }
+.eraser-art .eraser-mark-red { fill: none; stroke: #b74742; stroke-width: 4; stroke-linecap: round; }
+.eraser-art text { fill: #383735; font: 700 12px "Gaegu Local", cursive; }
 .coming-art { background-color: #efefec; }
 .coming-art ellipse { fill: #eeeae2; stroke: #888780; stroke-width: 2; opacity: .75; }
 .coming-art circle { fill: none; stroke: #777772; stroke-width: 2; stroke-dasharray: 5 4; opacity: .68; }

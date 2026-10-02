@@ -1,0 +1,87 @@
+@page "/game/eraser"
+@implements IAsyncDisposable
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject Microsoft.JSInterop.IJSRuntime JS
+@inject PlayerSettingsStore SettingsStore
+
+<PageTitle>지우개 따먹기 · GomokuAI</PageTitle>
+
+<main class="eraser-shell" @ref="root">
+    <header class="eraser-header">
+        <button type="button" class="eraser-icon-button" aria-label="게임 선택으로 나가기" @onclick="Exit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+        </button>
+        <div class="eraser-title"><span>DESK DUEL</span><h1>지우개 따먹기</h1></div>
+        <span class="round-label" data-round>1 라운드</span>
+    </header>
+
+    <section class="eraser-scoreboard" aria-live="polite">
+        <div class="player-card player-one active" data-player-card="0">
+            <span class="player-marker">1P</span><strong data-player-name="0">플레이어 1</strong><small>파란 지우개</small>
+        </div>
+        <div class="turn-status"><span class="turn-doodle" aria-hidden="true">✎</span><strong data-turn-label>플레이어 1 차례</strong><small data-status>뒤로 당겨 조준하세요</small></div>
+        <div class="player-card player-two" data-player-card="1">
+            <span class="player-marker">2P</span><strong data-player-name="1">플레이어 2</strong><small>빨간 지우개</small>
+        </div>
+    </section>
+
+    <section class="eraser-arena-wrap" aria-label="책상 위 지우개 게임판">
+        <canvas class="eraser-canvas" aria-label="지우개를 뒤로 당겨 튕기세요. 터치와 마우스를 모두 지원합니다." tabindex="0"></canvas>
+        <div class="turn-toast" data-toast aria-live="assertive"></div>
+        <div class="eraser-end-overlay" data-end hidden>
+            <div class="end-card sketch-panel">
+                <span class="end-kicker" data-end-kicker>승리</span>
+                <strong data-end-title>걸쳤다!</strong>
+                <p data-end-copy></p>
+                <button type="button" class="end-restart" data-action="restart">다시하기</button>
+                <button type="button" class="end-exit" data-action="exit">게임 선택으로</button>
+            </div>
+        </div>
+        <dialog class="eraser-help" data-help>
+            <form method="dialog"><button class="help-close" aria-label="도움말 닫기">×</button></form>
+            <span>HOW TO PLAY</span>
+            <h2>지우개를 포개보세요</h2>
+            <ol>
+                <li>자기 차례에 지우개를 누르고 뒤로 당겨요.</li>
+                <li>놓으면 당긴 방향의 반대로 미끄러져요. 길게 당길수록 세게 튕겨요.</li>
+                <li>상대 지우개와 부딪힌 뒤, 멈췄을 때 30% 이상 포개져 있으면 승리예요.</li>
+                <li>70% 이상 포개면 <b>완전 포개기</b>로 더 큰 승리 효과가 나와요.</li>
+                <li>20번 움직일 때까지 승부가 나지 않으면 무승부예요.</li>
+            </ol>
+            <button type="button" class="help-done" data-action="close-help">알겠어요</button>
+        </dialog>
+    </section>
+
+    <footer class="eraser-controls">
+        <p class="eraser-tip" data-tip>방향과 힘을 섬세하게 맞춰보세요</p>
+        <div class="eraser-buttons">
+            <button type="button" data-action="restart"><span aria-hidden="true">↻</span> 다시하기</button>
+            <button type="button" data-action="help"><span aria-hidden="true">?</span> 도움말</button>
+            <button type="button" data-action="exit"><span aria-hidden="true">⌂</span> 나가기</button>
+        </div>
+    </footer>
+</main>
+
+@code {
+    private ElementReference root;
+    private Microsoft.JSInterop.IJSObjectReference? module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var settings = await SettingsStore.LoadAsync();
+        module = await JS.InvokeAsync<Microsoft.JSInterop.IJSObjectReference>("import", "./js/eraser/eraser-game.js");
+        await module.InvokeVoidAsync("start", root, settings.PlayerName);
+    }
+
+    private void Exit() => Navigation.NavigateTo("games");
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is null) return;
+        try { await module.InvokeVoidAsync("stop"); await module.DisposeAsync(); }
+        catch (Microsoft.JSInterop.JSException) { }
+        catch (Microsoft.JSInterop.JSDisconnectedException) { }
+    }
+}

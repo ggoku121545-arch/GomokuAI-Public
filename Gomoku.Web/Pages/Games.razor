@@ -53,6 +53,14 @@
                             <circle class="stone-white" cx="42" cy="61" r="8"/><circle class="stone-black" cx="59" cy="61" r="8"/>
                         </svg>
                     }
+                    else if (game.Id == "eraser")
+                    {
+                        <svg viewBox="0 0 100 100" class="eraser-art" focusable="false">
+                            <path class="eraser-trail" d="M10 76q17 8 30-1M59 25q14-14 27-13" />
+                            <g transform="rotate(-21 39 56)"><rect class="eraser-blue" x="9" y="39" width="60" height="34" rx="8"/><path d="M18 46v20" class="eraser-mark-blue"/><text x="43" y="60">1P</text></g>
+                            <g transform="rotate(17 66 51)"><rect class="eraser-red" x="37" y="31" width="56" height="32" rx="8"/><path d="M45 37v20" class="eraser-mark-red"/><text x="69" y="51">2P</text></g>
+                        </svg>
+                    }
                     else
                     {
                         <svg viewBox="0 0 100 100" class="coming-art" focusable="false">
@@ -83,11 +91,12 @@
         new("gomoku", "오목", "AI와 두는 클래식 오목", "●", "gomoku-icon", true, "game/gomoku"),
         new("alkagi", "알까기", "돌을 튕겨 상대 돌을 밀어내세요", "◉", "alkagi-icon", true, "game/alkagi"),
         new("othello", "오델로", "AI 또는 2인 대전 · 8×8 돌 뒤집기", "◐", "othello-icon", true, "game/othello"),
+        new("eraser", "지우개 따먹기", "각도를 맞춰 상대 지우개 위에 포개세요", "▰", "eraser-icon", true, "game/eraser"),
         new("coming-soon", "준비 중", "새로운 게임이 곧 찾아옵니다", "…", "soon-icon", false, string.Empty)
     ];
 
-    private readonly string[] defaultOrder = ["gomoku", "alkagi", "othello", "coming-soon"];
-    private string[] gameOrder = ["gomoku", "alkagi", "othello", "coming-soon"];
+    private readonly string[] defaultOrder = ["gomoku", "alkagi", "othello", "eraser", "coming-soon"];
+    private string[] gameOrder = ["gomoku", "alkagi", "othello", "eraser", "coming-soon"];
     private ElementReference gameList;
     private Microsoft.JSInterop.IJSObjectReference? module;
     private Microsoft.JSInterop.DotNetObjectReference<Games>? dotNetReference;
