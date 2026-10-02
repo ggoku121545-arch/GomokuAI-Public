@@ -44,7 +44,7 @@
 </main>
 
 @code {
-    private static readonly GameOption[] Games =
+    private static readonly GameOption[] GameCatalog =
     [
         new("gomoku", "오목", "AI와 두는 클래식 오목", "●", "gomoku-icon", true, "game/gomoku"),
         new("alkagi", "알까기", "돌을 튕겨 상대 돌을 밀어내세요", "◉", "alkagi-icon", true, "game/alkagi"),
@@ -60,7 +60,7 @@
     private bool reorderEnabled;
 
     private IReadOnlyList<GameOption> orderedGames => gameOrder
-        .Select(id => Games.First(game => game.Id == id))
+        .Select(id => GameCatalog.First(game => game.Id == id))
         .ToArray();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -92,8 +92,8 @@
     [Microsoft.JSInterop.JSInvokable]
     public Task OnGameOrderChanged(string[] order)
     {
-        if (order.Length != Games.Length || order.Distinct(StringComparer.Ordinal).Count() != Games.Length ||
-            order.Any(id => !Games.Any(game => game.Id == id))) return Task.CompletedTask;
+        if (order.Length != GameCatalog.Length || order.Distinct(StringComparer.Ordinal).Count() != GameCatalog.Length ||
+            order.Any(id => !GameCatalog.Any(game => game.Id == id))) return Task.CompletedTask;
 
         gameOrder = order;
         return InvokeAsync(StateHasChanged);
