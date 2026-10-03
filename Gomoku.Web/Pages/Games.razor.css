@@ -62,6 +62,12 @@
 .eraser-art .eraser-mark-blue { fill: none; stroke: #2769bb; stroke-width: 4; stroke-linecap: round; }
 .eraser-art .eraser-mark-red { fill: none; stroke: #b74742; stroke-width: 4; stroke-linecap: round; }
 .eraser-art text { fill: #383735; font: 700 12px "Gaegu Local", cursive; }
+.push-art .push-desk-lines { fill:none;stroke:#827760;stroke-width:1.5;stroke-linecap:round;opacity:.62; }
+.push-art .push-edge-line { fill:none;stroke:#bd5550;stroke-width:2.7;stroke-dasharray:4 3; }
+.push-art .push-trail { fill:none;stroke:#577e99;stroke-width:2;stroke-dasharray:3 3; }
+.push-art .push-eraser { fill:#e58e9b;stroke:#403e3a;stroke-width:2;filter:drop-shadow(2px 3px 1px #0004); }
+.push-art .push-mark { fill:none;stroke:#c87482;stroke-width:2.5;stroke-linecap:round; }
+.push-art .push-arrow { fill:none;stroke:#577e99;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 .coming-art { background-color: #efefec; }
 .coming-art ellipse { fill: #eeeae2; stroke: #888780; stroke-width: 2; opacity: .75; }
 .coming-art circle { fill: none; stroke: #777772; stroke-width: 2; stroke-dasharray: 5 4; opacity: .68; }
