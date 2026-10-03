@@ -61,6 +61,16 @@
                             <g transform="rotate(17 66 51)"><rect class="eraser-red" x="37" y="31" width="56" height="32" rx="8"/><path d="M45 37v20" class="eraser-mark-red"/><text x="69" y="51">2P</text></g>
                         </svg>
                     }
+                    else if (game.Id == "eraser-push")
+                    {
+                        <svg viewBox="0 0 100 100" class="push-art" focusable="false">
+                            <path class="push-desk-lines" d="M8 22 86 15M8 39 86 32M8 57 86 49M8 75 86 67M8 91 86 84" />
+                            <path class="push-edge-line" d="M77 12v76M83 13v76" />
+                            <path class="push-trail" d="M18 53q18 4 33-4" />
+                            <g transform="rotate(-8 47 48)"><rect class="push-eraser" x="35" y="39" width="25" height="17" rx="3"/><path class="push-mark" d="M41 42v11"/></g>
+                            <path class="push-arrow" d="m25 47-7 5 7 5" />
+                        </svg>
+                    }
                     else
                     {
                         <svg viewBox="0 0 100 100" class="coming-art" focusable="false">
@@ -92,11 +102,12 @@
         new("alkagi", "알까기", "돌을 튕겨 상대 돌을 밀어내세요", "◉", "alkagi-icon", true, "game/alkagi"),
         new("othello", "오델로", "AI 또는 2인 대전 · 8×8 돌 뒤집기", "◐", "othello-icon", true, "game/othello"),
         new("eraser", "지우개 따먹기", "각도를 맞춰 상대 지우개 위에 포개세요", "▰", "eraser-icon", true, "game/eraser"),
+        new("eraser-push", "지우개 밀기", "책상 끝에 아슬아슬하게 세워보세요", "▱", "eraser-push-icon", true, "eraser-push.html"),
         new("coming-soon", "준비 중", "새로운 게임이 곧 찾아옵니다", "…", "soon-icon", false, string.Empty)
     ];
 
-    private readonly string[] defaultOrder = ["gomoku", "alkagi", "othello", "eraser", "coming-soon"];
-    private string[] gameOrder = ["gomoku", "alkagi", "othello", "eraser", "coming-soon"];
+    private readonly string[] defaultOrder = ["gomoku", "alkagi", "othello", "eraser", "eraser-push", "coming-soon"];
+    private string[] gameOrder = ["gomoku", "alkagi", "othello", "eraser", "eraser-push", "coming-soon"];
     private ElementReference gameList;
     private Microsoft.JSInterop.IJSObjectReference? module;
     private Microsoft.JSInterop.DotNetObjectReference<Games>? dotNetReference;
@@ -128,7 +139,7 @@
 
     private void SelectGame(GameOption game)
     {
-        if (game.IsAvailable) Navigation.NavigateTo(game.Route);
+        if (game.IsAvailable) Navigation.NavigateTo(game.Route, game.Id == "eraser-push");
     }
 
     private void GoHome() => Navigation.NavigateTo(Navigation.BaseUri);
